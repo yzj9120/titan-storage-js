@@ -1,0 +1,383 @@
+<!doctype html>
+<html class="default no-js">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Titan Storage 1.0.0 </title>
+	<meta name="description" content="Documentation for NERTC V5.6.30">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../src/assets/css/main.css">
+
+</head>
+
+<body>
+
+	<div class="container container-main">
+		<div class="row">
+			<div class="col-12 col-content">
+				<div class="tsd-panel tsd-typography">
+					<a href="#nertc-web-sdk" id="nertc-web-sdk" style="color: inherit; text-decoration: none;">
+						<h1><span id="NERtc Web SDK">Titan Storage Web SDK</span></h1>
+					</a>
+					<p>Titan Storage Web SDK 提供文件上传,文件下载,文件删除,文件改名,文件分享,创建文件夹。</p>
+					<p>Web SDK 由 TitanStorage 组成。</p>
+					<ul>
+						<li><a href="modules/nertc.nertc-1.html">TitanStorage</a> 是基础对象，是所有可调用方法的入口。</li>
+					</ul>
+
+					<a href="#TitanStorage-对象" id="TitanStorage-对象" style="color: inherit; text-decoration: none;">
+						<h2><span id="NERTC 对象">TitanStorage 对象</span></h2>
+					</a>
+					<table>
+						<thead>
+							<tr>
+								<th>方法</th>
+								<th>功能描述</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><a href="../demo/titan-init.html">TitanStorage.initSdk</a></td>
+								<td>初始化Sdk</td>
+							</tr>
+							<tr>
+								<td><a href="./titan-areaId.html">TitanStorage.getAreaId</a></td>
+								<td>获取调度器的area id 列表</td>
+							</tr>
+							<tr>
+								<td><a href="./titan-areaId.html">TitanStorage.createGroup</a></td>
+								<td>创建目录，包括创建根目录和子目录的文件夹</td>
+							</tr>
+
+							<tr>
+								<td><a href="./titan-areaId.html">TitanStorage.getAssetGroupList</a></td>
+								<td>获取列表所以的文件夹和文件列表</td>
+							</tr>
+
+							<tr>
+								<td><a href="./titan-areaId.html">TitanStorage.renameGroup</a></td>
+								<td>修改某一个文件夹名称</td>
+							</tr>
+
+
+							<tr>
+								<td><a href="./titan-areaId.html">TitanStorage.renameAsset</a></td>
+								<td>修改某一个文件名称</td>
+							</tr>
+
+							<tr>
+								<td><a href="./titan-areaId.html">TitanStorage.deleteGroup</a></td>
+								<td>删除某一个文件夹名称</td>
+							</tr>
+
+							<tr>
+								<td><a href="./titan-areaId.html">TitanStorage.deleteAsset</a></td>
+								<td>删除某一个文件</td>
+							</tr>
+
+							<tr>
+								<td><a href="./titan-areaId.html">TitanStorage.userInfo</a></td>
+								<td>获取用户相关信息</td>
+							</tr>
+
+							<tr></tr>
+							<td><a href="./titan-areaId.html">TitanStorage.getAssetGroupInfo</a></td>
+							<td>获取文件/文件夹详细</td>
+							</tr>
+
+							<tr>
+								<td><a href="./titan-areaId.html">TitanStorage.share</a></td>
+								<td>文件/文件夹数据分享</td>
+							</tr>
+
+							<tr>
+								<td><a href="./titan-areaId.html">TitanStorage.fileUpload</a></td>
+								<td>文件/文件夹上传</td>
+							</tr>
+
+
+							<tr>
+								<td><a href="./titan-areaId.html">TitanStorage.fileDownLoad</a></td>
+								<td>文件/文件夹下载</td>
+							</tr>
+
+						</tbody>
+					</table>
+
+
+					<a href="#错误代码" id="错误代码" style="color: inherit; text-decoration: none;">
+						<h2><span id="errorCode">错误代码</span></h2>
+					</a>
+					<p>以下为 SDK 可能抛出的错误，请参考下表进行处理。</p>
+					<a href="#errorcode" id="errorcode" style="color: inherit; text-decoration: none;">
+						<h3>ErrorCode</h3>
+					</a>
+
+					<table>
+						<thead>
+							<tr>
+								<th align="left">错误码</th>
+								<th align="left">描述</th>
+								<th align="left">可能原因及处理建议</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td align="left">10001</td>
+								<td align="left">SDK初始化异常</td>
+								<td align="left">一般是appkey错误，可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+							<tr>
+								<td align="left">10002</td>
+								<td align="left">SDK初始化失败</td>
+								<td align="left">一般是SDK初始化出现异常了，可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+							<tr>
+								<td align="left">10005</td>
+								<td align="left">文件或者文件夹名称错误</td>
+								<td align="left">一般是参数有误，可以通过 console 日志查看错误原因及处理方式
+							</tr>
+							<tr>
+								<td align="left">10006</td>
+								<td align="left">ID参数错误</td>
+								<td align="left">一般是参数有误，可以通过 console 日志查看错误原因及处理方式
+							</tr>
+							<tr>
+								<td align="left">10007</td>
+								<td align="left">分享失败</td>
+								<td align="left">一般是分享不支持分享，可以通过 console 日志查看错误原因及处理方式
+							</tr>
+							<tr>
+								<td align="left">10008</td>
+								<td align="left">数据格式错误</td>
+								<td align="left">一般是数据格式错误，可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+							<tr>
+								<td align="left">10009</td>
+								<td align="left">分享密码不正确</td>
+								<td align="left">一般是数据格式错误，可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+							<tr>
+								<td align="left">100010</td>
+								<td align="left">请求服务器异常</td>
+								<td align="left">一般是请求错误，请联系技术支持</td>
+							</tr>
+							<tr>
+								<td align="left">100011</td>
+								<td align="left">请求参数错误</td>
+								<td align="left">可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+							<tr>
+								<td align="left">100012</td>
+								<td align="left">非法参数</td>
+								<td align="left">一般是请求错误，可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+							<tr>
+								<td align="left">100013</td>
+								<td align="left">非法参数</td>
+								<td align="left">一般是请求错误，可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+							<tr>
+								<td align="left">100014</td>
+								<td align="left">请求参数字段缺失</td>
+								<td align="left">可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+							<tr>
+								<td align="left">100015</td>
+								<td align="left">上传失败</td>
+								<td align="left">可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+							<tr>
+								<td align="left">100016</td>
+								<td align="left">区域ID不正确</td>
+								<td align="left">一般是当前参数类型错误，可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+							<tr>
+								<td align="left">100017</td>
+								<td align="left">节点D不正确</td>
+								<td align="left">一般是当前参数没有找到，可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+							<tr>
+								<td align="left">100018</td>
+								<td align="left">找不到文件类型</td>
+								<td align="left">可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+
+							<tr>
+								<td align="left">100019</td>
+								<td align="left">下载地址错误</td>
+								<td align="left">服务器返回地址错误或者地址不可以使用。可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+							<tr>
+								<td align="left">100020</td>
+								<td align="left">下载异常了</td>
+								<td align="left">可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+
+							<tr>
+								<td align="left">100021</td>
+								<td align="left">文件ID验证不正确</td>
+								<td align="left">可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+
+							<tr>
+								<td align="left">100022</td>
+								<td align="left">找不到下载类型</td>
+								<td align="left">可以通过 console 日志查看错误原因及处理方式</td>
+							</tr>
+
+							<tr>
+								<td align="left">99999</td>
+								<td align="left">一般是未知原因错误</td>
+								<td align="left"></td>
+							</tr>
+						</tbody>
+					</table>
+
+
+				</div>
+			</div>
+
+			<input type="file" id="fileInput" />
+			<button id="uploadButton">Upload File</button>
+
+			<!-- 修改为选择文件夹 -->
+			<!-- <input type="file" id="fileInput" webkitdirectory multiple />
+			<button id="uploadButton">Upload Folder</button> -->
+		</div>
+	</div>
+
+
+</body>
+<script src="./js/titanStorage.js"></script>
+<script>
+	document.addEventListener('DOMContentLoaded', function () {
+		try {
+			// Initialize TitanSDK
+			TitanStorage.initSdk({
+				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjg0NjMxNTUsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyODM3Njc1NSwicm9sZSI6MH0.mwufQfjgTRVWtFuSPMi-YHO1u6tQZ8oFgsjjilP-Ww8', // Replace with actual app key
+				debug: true
+			});
+
+			const sdk = TitanStorage.getInstance();
+
+			sdk.getAreaId()
+				.then(res => {
+					console.log('res:', res);
+
+				})
+				.catch(error => {
+					console.error('error:', error);
+				});
+
+
+
+			// sdk.createGroup({
+			// 		name: "黄大仙",
+			// 		parent: 0
+			// 	}).then(data => {
+			// 		console.log('Folder created successfully:', data);
+			// 	}).catch(error => {
+			// 		console.error('Error creating folder:', error);
+			// 	});
+
+
+			// sdk.fileDownLoad('bafkreiajazbdssqw25y44mmrqwjei4xmzlefeopd2ptp2ehxaujy4g2db4', "folder", (progress) => {
+			// 	console.log(`下载进度: ${progress}%`);
+
+			// })
+			// 	.then(res => {
+			// 		console.log('res:', res);
+
+			// 	})
+			// 	.catch(error => {
+			// 		console.error('error:', error);
+			// 	});
+
+
+
+
+
+
+
+			// sdk.getAssetGroupList({
+			// 	page: 1,
+			// 	parent: 0,
+			// 	pageSize: 10
+			// })
+			// 	.then(res => {
+			// 		console.log('Folder created res:', res);
+			// 		// 检查是否有数据，并从中获取第一条的ID
+			// 		const UserAssetDetail = res?.data?.list?.[1]?.AssetOverview.UserAssetDetail;
+			// 		console.log('UserAssetDetail:', UserAssetDetail);
+			// 		// 创建新文件夹
+			// 		sdk.share({
+			// 			assetDetail: UserAssetDetail,
+			// 		});
+			// 	})
+			// 	.catch(error => {
+			// 		console.error('An error occurred while fetching groups or creating folder:', error);
+			// 	});
+
+
+		} catch (error) {
+			console.error('Error initializing TitanStorage:', error);
+		}
+	});
+
+	// 绑定事件监听器
+	document.getElementById('uploadButton').addEventListener('click', async () => {
+		const fileInput = document.getElementById('fileInput');
+		const file = fileInput.files[0];
+
+		if (file) {
+			const sdk = TitanStorage.getInstance();
+			const assetData = {};
+			// const assetData = { areaId: [], groupId: 0 ,assetType:0extraId:"52145655"};
+			await sdk.fileUpload(file, assetData, (loaded, total, percent) =>
+				console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
+			);
+		} else {
+			console.error('No file selected');
+		}
+	});
+
+	// document.getElementById('uploadButton').addEventListener('click', async () => {
+	// 	const fileInput = document.getElementById('fileInput');
+	// 	const files = fileInput.files;
+	// 	console.log('files:', files);
+
+	// 	const sdk = TitanStorage.getInstance();
+	// 	const assetData = { areaId: [], groupId: 0, assetType: 1 };
+	// 	await sdk.fileUpload(files, assetData, (loaded, total, percent) =>
+	// 		console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
+	// 	);
+	// });
+
+
+	// document.getElementById('uploadButton').addEventListener('click', async () => {
+	// 	const fileInput = document.getElementById('fileInput');
+	// 	const files = fileInput.files;
+	// 	const sdk = TitanStorage.getInstance();
+	// 	const assetData = { areaId: [], groupId: 0, assetType: 1 };
+	// 	await sdk.fileUpload(files, assetData, (loaded, total, percent) =>
+	// 		console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
+	// 	);
+	// });
+
+
+	// document.getElementById('fileInput').addEventListener('change', (event) => {
+	// 	const fileList = [...event.target.files]; // 将 FileList 转换为数组
+	// 	console.log(fileList);
+	// 	const sdk = TitanStorage.getInstance();
+	// 	const assetData = { areaId: [], groupId: 0, assetType: 1 };
+	// 	sdk.fileUpload(fileList, assetData, (loaded, total, percent) =>
+	// 		console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
+	// 	);
+	// });
+
+
+</script>
+
+</html>

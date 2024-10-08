@@ -1,0 +1,6 @@
+src/
+webpack.config.js
+README.md
+dist/index.html
+dist/TitanStorage.js.gz
+dist/TitanStorage.js.LICENSE.txt
