@@ -88,11 +88,24 @@ export const Validator = {
       if (!shortPassRegex.test(shortPass)) {
         return onHandleError(
           StatusCodes.INVALID_PASSWORD,
-          "Short password is invalid."
+          "Short password is invalid. It must be 6 characters long and can only contain letters and numbers."
         );
       }
     }
   },
+  validateExpireAt(expireAt) {
+    if (expireAt) {
+      // 验证是否是正整数
+      const isPositiveInteger = Number.isInteger(expireAt) && expireAt > 0;
+      if (!isPositiveInteger) {
+        return onHandleError(
+          StatusCodes.INVALID_EXPIRE_AT,
+          "expireAt must be a positive integer."
+        );
+      }
+    }
+  }
+  ,
   validateShareStatus(shareStatus) {
     if (![0, 1].includes(shareStatus)) {
       return onHandleError(StatusCodes.SHARE_ERROE, "Share status is invalid.");

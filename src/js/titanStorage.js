@@ -18,7 +18,7 @@ class TitanStorage {
    * @param {Object} options - Initialization parameters
    * @returns {Object} Initialization result
    */
-  static initSdk(options = { token: "", debug: true, url: "" }) {
+  static initialize(options = { token: "", debug: true, url: "" }) {
     try {
       const status = Validator.validateApiKey(options.token);
 
@@ -76,7 +76,7 @@ class TitanStorage {
    * Get the area IDs
    * @returns {Promise<Object>} List of area IDs
    */
-  async getAreaId() {
+  async listRegions() {
     const data = await this.commService.onAreaId();
     return data;
   }
@@ -87,7 +87,7 @@ class TitanStorage {
    * @param {number} params.parent - Parent folder ID
    * @returns {Promise<Object>} Result of the creation
    */
-  async createGroup(options = { name: "", parent: 0 }) {
+  async createFolder(options = { name: "", parent: 0 }) {
     const data = await this.commService.onCreateGroup(
       options.name,
       options.parent
@@ -101,7 +101,7 @@ class TitanStorage {
    * @param {number} pageSize - Number of items per page
    * @returns {Promise<Object>} Asset group list data
    */
-  async getAssetGroupList(
+  async listDirectoryContents(
     options = {
       page: 1,
       parent: 0,
@@ -119,11 +119,11 @@ class TitanStorage {
   /**
    * Rename a folder
    * @param {Object} options - Rename parameters
-   * @param {number} options.groupId - Folder ID
+   * @param {number} options.groupId - Folder CID
    * @param {string} options.name - New name
    * @returns {Promise<Object>} Result of the rename operation
    */
-  async renameGroup(options = { groupId: -1, name: "" }) {
+  async renameFolder(options = { groupId: -1, name: "" }) {
     const data = await this.commService.renameGroup(options);
     return data;
   }
@@ -146,7 +146,7 @@ class TitanStorage {
    * @param {number} options.groupId - grouo ID
    * @returns {Promise<Object>}  Result of the rename operation
    */
-  async deleteGroup(options = { groupId: -1 }) {
+  async deleteFolder(options = { groupId: -1 }) {
     const data = await this.commService.deleteGroup(options);
     return data;
   }
@@ -158,14 +158,13 @@ class TitanStorage {
    */
   async deleteAsset(options = { assetId: -1, areaId: [] }) {
     const data = await this.commService.deleteAsset(options);
-    log("TitanStorage:deleteAsset:", data);
     return data;
   }
   /**
    * Get user information
    * @returns {Promise<Object>} User information
    */
-  async userInfo() {
+  async getUserProfile() {
     const data = await this.commService.userInfo();
     return data;
   }
@@ -174,7 +173,7 @@ class TitanStorage {
    * 获取文件和文件夹详细
    * 当cid 不为空时：获取文件信息，当 groupid不为空时获取文件夹信息
    */
-  async getAssetGroupInfo(options = { cId: -1, groupId: -1 }) {
+  async getltemDetails(options = { cId: -1, groupId: -1 }) {
     const data = await this.commService.getAssetGroupInfo(options);
     return data;
   }
@@ -182,14 +181,15 @@ class TitanStorage {
   /**
    * Share asset
    * @param {Object} options - Share parameters
-   * @param {Object} options.assetDetail - Asset details
-   * @param {Date} options.expireAt - Expiration time
-   * @param {string} options.shortPass - Short password
+   * @param {Object} options.id - Group ID or Asset CID, cannot be empty
+   * @param {Number} options.expireAt - Share expiration date (in days), default is permanent. If provided, the input value must be a positive integer.
+   * @param {string} options.shortPass - The access password is not mandatory. When it is not empty (a password consisting of 6 digits and letters), it needs to be verified whether it is valid
    * @returns {Promise<Object>} Share result
    */
-  async share(
+
+  async createSharedLink(
     options = {
-      assetDetail: {},
+      id: null,
       expireAt: null,
       shortPass: "",
     }
@@ -202,13 +202,15 @@ class TitanStorage {
    * @param {File} file - File to be uploaded
    * @param {Object} assetData - Additional data related to the asset
    * @param {Function} onProgress - Progress callback function
+   * @param {Function} onWritableStream - Progress callback function
    * @returns {Promise<Object>} Upload result
    */
-  async fileUpload(file, assetData, onProgress) {
+  async uploadAsset(file, assetData, onProgress, onStreamStatus) {
     const data = await this.commService.onFileUpload(
       file,
       assetData,
-      onProgress
+      onProgress,
+      onStreamStatus
     );
     return data;
   }
@@ -220,7 +222,7 @@ class TitanStorage {
    * @param {*} onProgress：进度条
    * @returns
    */
-  async fileDownLoad(assetCid, assetType, onProgress) {
+  async downloadAsset(assetCid, assetType, onProgress) {
     const data = await this.commService.onFileDown(
       assetCid,
       assetType,

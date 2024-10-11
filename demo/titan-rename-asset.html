@@ -1,0 +1,153 @@
+<!doctype html>
+<html class="default no-js">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Titan Storage 1.0.0</title>
+		<meta name="description" content="Documentation for Titan Storage SDK">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/TitanStorage.css">
+		<script src="./js/TitanStorage.js"></script>
+		
+	</head>
+
+	<body>
+		<div class="container container-main">
+			<div class="row">
+				<div class="col-12 col-content">
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+						<a name="renameAsset" class="tsd-anchor"></a>
+						<h3>renameAsset</h3>
+						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+							<li class="tsd-signature tsd-kind-icon">renameAsset(options = { assetId: -1, name: ''
+								})<span class="tsd-signature-symbol">:</span>
+								<span class="tsd-signature-type">Promise&lt;Object&gt;</span>
+							</li>
+						</ul>
+						<ul class="tsd-descriptions">
+							<li class="tsd-description">
+								<aside class="tsd-sources">
+								</aside>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>该函数用于重命名指定的文件。用户必须提供文件 CID 和新的名称。</p>
+									</div>
+									<dl class="tsd-comment-tags">
+										<dt>Example</dt>
+										<dd>
+											<pre><code>TitanStorage.renameAsset({
+  assetId: 12345,
+  name: 'Renamed Asset'
+}).then(data => {
+  console.log('Asset renamed successfully:', data);
+}).catch(error => {
+  console.error('Error renaming asset:', error);
+});</code></pre>
+										</dd>
+									</dl>
+								</div>
+								<h4 class="tsd-parameters-title">Parameters</h4>
+								<ul class="tsd-parameters">
+									<li>
+										<h5>assetId: <span class="tsd-signature-type">number</span></h5>
+										<p>文件的 CID。必须提供。</p>
+									</li>
+									<li>
+										<h5>name: <span class="tsd-signature-type">string</span></h5>
+										<p>新文件名称。必须提供，不能为空或仅由空白字符组成。</p>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-title">Returns <span
+										class="tsd-signature-type">Promise&lt;Object&gt;</span></h4>
+								<p>返回一个 Promise 对象，解析为包含重命名操作结果的响应数据。</p>
+								<h4 class="tsd-returns-details-title">Success Response</h4>
+								<p>成功返回的数据结构如下：</p>
+								<pre><code>{
+    "code": 0,
+    "data": {
+        "msg": "success"
+    }
+}</code></pre>
+								<h4 class="tsd-returns-details-title">Success Response Fields</h4>
+								<ul>
+									<li>
+										<h5>code: <span class="tsd-signature-type">number</span></h5>
+										<p>状态码，<code>0</code> 表示成功。</p>
+									</li>
+									<li>
+										<h5>data: <span class="tsd-signature-type">Object</span></h5>
+										<p>返回数据的主体对象。</p>
+										<ul>
+											<li>
+												<h5>msg: <span class="tsd-signature-type">string</span></h5>
+												<p>成功信息。</p>
+
+											</li>
+										</ul>
+									</li>
+								</ul>
+								<h4 class="tsd-returns-details-title">Failure Response</h4>
+								<p>失败返回的数据结构如下：</p>
+								<pre><code>{
+    "code": -1,
+    "err": 1004,
+    "msg": "Server Busy"
+}</code></pre>
+								<h4 class="tsd-returns-details-title">Failure Response Fields</h4>
+								<ul>
+									<li>
+										<h5>code: <span class="tsd-signature-type">number</span></h5>
+										<p>状态码，<code>-1</code> 表示失败。</p>
+									</li>
+									<li>
+										<h5>err: <span class="tsd-signature-type">number</span></h5>
+										<p>错误码，具体的错误类型。</p>
+									</li>
+									<li>
+										<h5>msg: <span class="tsd-signature-type">string</span></h5>
+										<p>错误消息，描述错误的具体原因。</p>
+									</li>
+								</ul>
+								<h4 class="tsd-throws-title">Throws</h4>
+								<p>如果名称为空或仅包含空白字符，或在重命名文件过程中发生错误，将抛出一个错误。</p>
+							</li>
+						</ul>
+					</section>
+				</div>
+			</div>
+		</div>
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const sdk = TitanStorage.getInstance();
+
+				sdk.getAssetGroupList({
+						page: 1,
+						parent: 0,
+						pageSize: 10
+					})
+					.then(res => {
+						// 检查是否有数据，并从中获取第一条的ID
+						const firstGroup = res?.data?.list?. [0]?.AssetOverview?.UserAssetDetail.Cid;
+						if (!firstGroup || !firstGroup.ID) {
+							throw new Error('No valid group found in the response.');
+						}
+						const firstCID = firstGroup.ID;
+						console.log('First Group ID:', firstGroupID);
+
+
+						return sdk.renameAsset({
+							name: 'New Folder',
+							parent: firstCID
+						});
+					})
+					.then(data => {})
+					.catch(error => {});
+
+
+			});
+		</script>
+
+	</body>
+
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html class="default no-js">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Titan Storage 1.0.0 Documentation</title>
+		<meta name="description" content="Documentation for Titan Storage SDK v1.0.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/TitanStorage.css">
+		<script src="./js/TitanStorage.js"></script>
+	</head>
+
+	<body>
+		<div class="container container-main">
+			<div class="row">
+				<div class="col-12 col-content">
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+						<a name="deleteAsset" class="tsd-anchor"></a>
+						<h3>deleteAsset</h3>
+						<p>This method allows you to delete a specific asset by its ID. It validates the input and
+							communicates with the server to perform the delete operation.</p>
+
+						<h4>Function Signature</h4>
+						<pre><code>const result = await deleteAsset(options);</code></pre>
+
+						<h4>Example</h4>
+						<pre><code>
+const result = await deleteAsset({ assetId: bafybeibe4awofqwksm46xr64yfhz7cca2vo5fj723qga6m5rhgum6uu3le, areaId: [“SouthKorea”, “Japan”] });
+if (result.code === 0) {
+    //success
+} else {
+    //fail
+}</code></pre>
+
+						<h4>Parameters</h4>
+						<ul>
+							<li><strong>assetId</strong>: <code>String</code> - TThe CID of the asset to be deleted. This is a required parameter. Cid located under AssetOverview object.</li>
+							<li><strong>areaId</strong>: <code>Array&lt;String&gt;</code> - An array of optional node region IDs associated with the asset, which by default deletes files under all node regions. Area_ids located under the AssetOverview object. Multiple choices are available, indicating the need to delete files under the node and not delete files in other node areas.</li>
+						</ul>
+
+						<h4>Returns</h4>
+						<p>This function returns a Promise which resolves to an object containing:</p>
+						<ul>
+							<li><strong>code</strong>: A number representing the result of the operation (0 for success,
+								other values indicate failure).</li>
+							<li><strong>data</strong>: The result of the delete operation if successful.</li>
+							<li><strong>msg</strong>: A string describing the outcome of the operation, especially
+								in case of errors.</li>
+						</ul>
+
+						<h4>Error Handling</h4>
+						<p>If the deletion fails, the <code>code</code> will be non-0, and the <code>message</code>
+							will provide details about the error, such as invalid asset ID or server-related issues.</p>
+
+						<h4>Important Note</h4>
+						<p>Ensure that the <code>assetId</code> is valid before calling the method to avoid unnecessary
+							errors. The method uses validators to check the input values, and it will return any
+							validation errors if the inputs are invalid.</p>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const sdk = TitanStorage.getInstance();
+				// Example usage of deleteAsset method
+				sdk.deleteAsset({
+						assetId: 'bafybeibe4awofqwksm46xr64yfhz7cca2vo5fj723qga6m5rhgum6uu3le',
+						areaId: ['SouthKorea', 'Japan']
+					})
+					.then(data => {
+						console.log('Asset deleted successfully:', data);
+					})
+					.catch(error => {
+						console.error('Error deleting asset:', error);
+					});
+			});
+		</script>
+
+	</body>
+
+</html>

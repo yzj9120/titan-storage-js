@@ -1,0 +1,90 @@
+<!doctype html>
+<html class="default no-js">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Titan Storage 1.0.0 Documentation</title>
+    <meta name="description" content="Documentation for Titan Storage SDK v1.0.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/TitanStorage.css">
+    <script src="./js/TitanStorage.js"></script>
+</head>
+
+<body>
+    <div class="container container-main">
+        <div class="row">
+            <div class="col-12 col-content">
+                <section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+                    <a name="getAssetGroupInfo" class="tsd-anchor"></a>
+                    <h3>getltemDetails</h3>
+                    <p>This method retrieves detailed information about files and folders. When <code>cId</code> is not empty, it fetches file information; when <code>groupId</code> is not empty, it fetches folder information.</p>
+
+                    <h4>Function Signature</h4>
+                    <pre><code>const data = await getltemDetails(options);</code></pre>
+
+                    <h4>Example</h4>
+                    <pre><code>
+const fileInfo = await getltemDetails({ cId: 12345 });
+if (fileInfo.code === 0) {
+    console.log('File information:', fileInfo.data);
+} else {
+    console.error('Failed to get file information:', fileInfo.message);
+}
+
+const folderInfo = await getAssetGroupInfo({ groupId: 67890 });
+if (folderInfo.code === 0) {
+    console.log('Folder information:', folderInfo.data);
+} else {
+    console.error('Failed :', folderInfo.msg);
+}</code></pre>
+
+                    <h4>Parameters</h4>
+                    <ul>
+                        <li><strong>cId</strong>: <code>Number</code> - The CID of the file. This parameter is optional; if it is empty, the method will fetch folder information based on <code>groupId</code>.</li>
+                        <li><strong>groupId</strong>: <code>Number</code> - The ID of the folder. This parameter is optional; if it is empty, the method will fetch file information based on <code>cId</code>.</li>
+                    </ul>
+
+                    <h4>Returns</h4>
+                    <p>This function returns a Promise that resolves to an object containing the following information:</p>
+                    <ul>
+                        <li><strong>code</strong>: A number representing the result of the operation (0 for success, other values indicate failure).</li>
+                        <li><strong>data</strong>: Contains the detailed information of the requested file or folder.</li>
+                        <li><strong>msg</strong>: A string describing the result of the operation, especially in case of errors.</li>
+                    </ul>
+
+                    <h4>Error Handling</h4>
+                    <p>If retrieving information fails, <code>code</code> will be a non-zero value, and <code>message</code> will provide details about the error, such as the file or folder not existing or network issues.</p>
+
+                    <h4>Important Note</h4>
+                    <p>Ensure that at least one of <code>cId</code> or <code>groupId</code> has a valid value before calling this method to avoid unnecessary errors.</p>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sdk = TitanStorage.getInstance();
+            // Example usage of the getAssetGroupInfo method
+            sdk.getltemDetails({ cId: 'bafybeign3m5urnsfloe4zv5vpeajzng6zb2gyd4ppph2ta3bxnsssho2ii' })
+                .then(data => {
+                    console.log('File information retrieved successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Failed to retrieve file information:', error);
+                });
+
+            // sdk.getltemDetails({ groupId: 260 })
+            //     .then(data => {
+            //         console.log('Folder information retrieved successfully:', data);
+            //     })
+            //     .catch(error => {
+            //         console.error('Failed to retrieve folder information:', error);
+            //     });
+        });
+    </script>
+
+</body>
+
+</html>

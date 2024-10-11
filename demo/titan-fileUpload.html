@@ -1,0 +1,200 @@
+<!doctype html>
+<html class="default no-js">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Titan Storage SDK Documentation</title>
+		<meta name="description" content="Documentation for Titan Storage SDK">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/TitanStorage.css">
+		<script src="./js/TitanStorage.js"></script>
+	</head>
+
+	<body>
+		<div class="container container-main">
+			<div class="row">
+				<div class="col-12 col-content">
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+						<a name="fileUpload" class="tsd-anchor"></a>
+						<h3>uploadAsset</h3>
+						<p>This method allows you to upload a file to the Titan Storage system, providing additional
+							asset data and handling upload progress through callback functions.</p>
+
+						<h4>Function Signature</h4>
+						<pre><code>const result = await uploadAsset(file, assetData, onProgress, onStreamStatus);</code></pre>
+
+						<p>This method sends a request to upload the specified file along with additional asset data.
+						</p>
+
+						<h4>Example file</h4>
+						<pre><code>
+async function uploadAsset() {
+    const file = document.getElementById('fileInput').files[0];
+    const assetData = {
+        extraId: "",
+        areaId: ["SouthKorea", "Japan"],
+        groupId: 0,
+        assetType: 0
+    };
+
+    const result = await uploadAsset(file, assetData, 
+        (progress) => console.log(`Upload progress: ${progress}%`) 
+    );
+
+    if (result.code === 0) {
+        console.log('File uploaded successfully:', result.data);
+    } else {
+        console.error('Error uploading file:', result.msg);
+    }
+}
+</code></pre>
+
+						<h4>Example folder</h4>
+						<pre><code>
+async function uploadAsset() {
+    const file = document.getElementById('fileInput').files[0];
+    const assetData = {
+        extraId: "",
+        areaId: ["SouthKorea", "Japan"],
+        groupId: 0,
+        assetType: 1
+    };
+
+    const result = await uploadAsset(file, assetData, 
+        (progress) => console.log(`Upload progress: ${progress}%`), 
+        (status) => console.log(`Stream status: ${status}`)
+    );
+
+    if (result.code === 0) {
+        console.log('File uploaded successfully:', result.data);
+    } else {
+        console.error('Error uploading file:', result.msg);
+    }
+}
+</code></pre>
+
+						<h4>Parameters</h4>
+						<ul>
+							<li><strong>file</strong>: <code>File</code> - The file object to be uploaded. This is a
+								required parameter.</li>
+							<li><strong>assetData</strong>: <code>Object</code> - Additional metadata related to the
+								asset being uploaded. This is a required parameter and should contain:
+								<ul>
+									<li><strong>extraId</strong>: <code>String</code> - External ID for integration
+										notifications (optional).</li>
+									<li><strong>areaId</strong>: <code>Array</code> - Region identifiers. If not empty,
+										the system will upload the file to specified regions. If empty, the system will
+										automatically distribute the file globally based on rules. The system calculates
+										the region based on the user's IP for downloading.</li>
+									<li><strong>groupId</strong>: <code>Number</code> - Node ID, defaults to the root
+										node (0). If uploading to the root node, the group ID must be obtained from the
+										Group ID.</li>
+									<li><strong>assetType</strong>: <code>Number</code> - File type, defaults to 0 for
+										files and 1 for folders.</li>
+
+									<li><strong>retryCount</strong>: <code>Number</code> - Download failure retry times
+										(default 2 times).</li>
+								</ul>
+							</li>
+							<li><strong>onProgress</strong>: <code>Function</code> - A callback function to handle
+								upload progress. It receives the progress percentage as an argument.</li>
+							<li><strong>onStreamStatus</strong>: <code>Function</code> - A callback function to handle the stream status during the upload. It receives status updates as arguments. The possible status values include:
+							        <ul>
+							            <li><strong>writing</strong>: Indicates that the upload is currently in progress.</li>
+							            <li><strong>close</strong>: Indicates that the upload has been successfully completed and the stream has been closed.</li>
+							            <li><strong>abort</strong>: Indicates that the upload was aborted before completion, possibly due to an error or user intervention.</li>
+							        </ul>
+							    </li>
+						
+						</ul>
+
+						<h4>Returns</h4>
+						<p>This function returns a Promise which resolves to an object containing:</p>
+						<ul>
+							<li><strong>code</strong>: A number representing the result of the operation (0 for success,
+								other values indicate failure).</li>
+							<li><strong>data</strong>: The uploaded asset object if the operation is successful.</li>
+							<li><strong>msg</strong>: A string describing the outcome of the operation, especially in
+								case of errors.</li>
+						</ul>
+
+						<h4>Error Handling</h4>
+						<p>If the upload operation fails, the <code>code</code> will be non-200, and the
+							<code>message</code> will provide details about the error, such as invalid file types,
+							upload size limits, or server-related issues.
+						</p>
+
+						<h4>Important Note</h4>
+						<p>Ensure that the <code>file</code> parameter is a valid File object and that the
+							<code>assetData</code> contains the necessary metadata. The method uses validators to check
+							the input values, returning any validation errors if the inputs are invalid.
+						</p>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const sdk = TitanStorage.getInstance();
+				const fileInput = document.getElementById('fileInput');
+				// 文件上传
+				document.getElementById('uploadButton').addEventListener('click', async () => {
+					const fileInput = document.getElementById('fileInput');
+					const file = fileInput.files[0];
+					if (file) {
+						const sdk = TitanStorage.getInstance();
+						const assetData = {
+							areaId: [],
+							groupId: 0,
+							assetType: 0,
+							extraId: "52145655"
+						};
+						var res = await sdk.uploadAsset(file, assetData, (loaded, total, percent) =>
+							console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
+						);
+						console.log("result:", res);
+					} else {
+						console.error('No file selected');
+					}
+				});
+				// 文件夹上传
+				document.getElementById('uploadButton').addEventListener('click', async () => {
+					const fileInput = document.getElementById('fileInput');
+					const files = fileInput.files;
+					const sdk = TitanStorage.getInstance();
+					const assetData = {
+						areaId: [],
+						groupId: 0,
+						assetType: 1
+					};
+					var res = await sdk.uploadAsset(files, assetData,
+						(loaded, total, percent) => {
+							console.log(`Progress: ${percent.toFixed(2)}% (${loaded}/${total})`);
+						},
+						(status) => {
+							// Handle the stream status updates
+							switch (status) {
+								case 'writing':
+									console.log(`Writing ${file.name}...`);
+									break;
+								case 'close':
+									console.log(`Upload for ${file.name} closed.`);
+									break;
+								case 'abort':
+									console.log(`Upload for ${file.name} aborted.`);
+									break;
+								default:
+									console.warn(`Unknown status: ${status}`);
+							}
+						}
+					);
+					console.log("result:", res);
+				});
+			});
+		</script>
+
+	</body>
+
+</html>

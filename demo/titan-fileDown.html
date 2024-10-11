@@ -1,0 +1,79 @@
+<!doctype html>
+<html class="default no-js">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Titan Storage SDK Documentation</title>
+    <meta name="description" content="Documentation for Titan Storage SDK">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/TitanStorage.css">
+    <script src="./js/TitanStorage.js"></script>
+</head>
+
+<body>
+    <div class="container container-main">
+        <div class="row">
+            <div class="col-12 col-content">
+                <section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+                    <a name="fileDownLoad" class="tsd-anchor"></a>
+                    <h3>downloadAsset</h3>
+                    <p>This method handles the downloading of files or folders from Titan Storage.</p>
+
+                    <h4>Function Signature</h4>
+                    <pre><code>const result = await downloadAsset(assetCid, assetType, onProgress);</code></pre>
+
+                    <h4>Example</h4>
+                    <pre><code>const result = await sdk.downloadAsset(assetCid, assetType, (loaded, total, percent) => {
+    console.log(`Download Progress: ${percent.toFixed(2)}% (${loaded}/${total})`);
+});</code></pre>
+
+                    <h4>Parameters</h4>
+                    <ul>
+                        <li><strong>assetCid</strong>: <code>*</code> - The CID of the file to be downloaded.</li>
+                        <li><strong>assetType</strong>: <code>*</code> - The type of the asset:
+                            <ul>
+                                <li><strong>file</strong>: Indicates that the asset is a file.</li>
+                                <li><strong>folder</strong>: Indicates that the asset is a folder.</li>
+                            </ul>
+                        </li>
+                        <li><strong>onProgress</strong>: <code>Function</code> - A callback function to handle the progress of the download. It receives the current loaded bytes, total bytes, and the percentage of completion as arguments.</li>
+                    </ul>
+
+                    <h4>Returns</h4>
+                    <p>This function returns a Promise that resolves to an object containing:</p>
+                    <ul>
+                        <li><strong>code</strong>: A number representing the result of the download operation.</li>
+                        <li><strong>data</strong>: The downloaded file or folder information upon success.</li>
+                        <li><strong>msg</strong>: A string describing the outcome of the operation, especially in case of errors.</li>
+                    </ul>
+
+                    <h4>Error Handling</h4>
+                    <p>If the download operation fails, the <code>code</code> will be non-zero, and the <code>msg</code> will provide details about the error, such as invalid CID or server-related issues.</p>
+
+                    <h4>Important Note</h4>
+                    <p>Ensure that the <code>assetCid</code> and <code>assetType</code> parameters are valid before calling the method to avoid unnecessary errors.</p>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sdk = TitanStorage.getInstance();
+            // Example of file download
+            document.getElementById('downloadButton').addEventListener('click', async () => {
+                const assetCid = 'bafybeign3m5urnsfloe4zv5vpeajzng6zb2gyd4ppph2ta3bxnsssho2ii'; // Replace with actual CID
+                const assetType = 'file'; // or 'folder'
+                const res = await sdk.downloadAsset(assetCid, assetType, (loaded, total, percent) => {
+                    console.log(`Download Progress: ${percent.toFixed(2)}% (${loaded}/${total})`);
+                });
+
+                console.log("Download result:", res);
+            });
+        });
+    </script>
+
+</body>
+
+</html>

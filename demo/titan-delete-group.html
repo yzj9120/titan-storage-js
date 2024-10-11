@@ -1,0 +1,74 @@
+<!doctype html>
+<html class="default no-js">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Titan Storage SDK Documentation</title>
+		<meta name="description" content="Documentation for Titan Storage SDK">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/TitanStorage.css">
+		<script src="./js/TitanStorage.js"></script>
+	</head>
+
+	<body>
+		<div class="container container-main">
+			<div class="row">
+				<div class="col-12 col-content">
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+						<a name="deleteGroup" class="tsd-anchor"></a>
+						<h3>deleteFolder</h3>
+						<p>This method allows you to delete a group by specifying its group ID. It sends a request to remove the group from the server.</p>
+
+						<h4>Function Signature</h4>
+						<pre><code>const result = await deleteFolder({ groupId });</code></pre>
+
+						<p>This method communicates with the server to delete the specified group.</p>
+
+						<h4>Example</h4>
+						<pre><code>const result = await deleteFolder({ groupId: 1001 });
+if (result.code === 0) {
+    console.log(result.data); // Success
+} else {
+    console.error(result.message); // Failure
+}</code></pre>
+
+						<h4>Parameters</h4>
+						<ul>
+							<li><strong>groupId</strong>: <code>Number</code> - The ID of the group to delete. This is a required parameter and must be a valid group ID.</li>
+						</ul>
+
+						<h4>Returns</h4>
+						<p>This function returns a Promise which resolves to an object containing:</p>
+						<ul>
+							<li><strong>code</strong>: A number representing the result of the operation (0 for success, other values indicate failure).</li>
+							<li><strong>data</strong>: The status of the delete operation if it is successful.</li>
+							<li><strong>msg</strong>: A string describing the outcome of the operation, especially in case of errors.</li>
+						</ul>
+
+						<h4>Error Handling</h4>
+						<p>If the deletion operation fails, the <code>code</code> will be non-200, and the <code>message</code> will provide details about the error, such as an invalid group ID or server-related issues.</p>
+
+						<h4>Important Note</h4>
+						<p>Ensure that the <code>groupId</code> parameter is valid before calling the method to avoid unnecessary errors.</p>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const sdk = TitanStorage.getInstance();
+				sdk.deleteFolder({ groupId: 263 })
+					.then(data => {
+						console.log('Group deleted successfully:', data);
+					})
+					.catch(error => {
+						console.error('Error deleting group:', error);
+					});
+			});
+		</script>
+
+	</body>
+
+</html>

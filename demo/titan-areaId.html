@@ -1,0 +1,104 @@
+<!doctype html>
+<html class="default no-js">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Titan Storage 1.0.0 Documentation</title>
+		<meta name="description" content="Documentation for Titan Storage SDK v1.0.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/TitanStorage.css">
+		<script src="./js/TitanStorage.js"></script>
+	</head>
+
+	<body>
+		<div class="container container-main">
+			<div class="row">
+				<div class="col-12 col-content">
+					<!-- Updated getAreaId function documentation -->
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+						<a name="getAreaId" class="tsd-anchor"></a>
+						<h3>listRegions</h3>
+						<p>This function is used to obtain a list of node regions and return the data as a Promise.
+
+
+
+.</p>
+
+						<h4>Function Signature</h4>
+						<pre><code>Promise&lt;Object&gt; listRegions()</code></pre>
+
+						<h4>Example</h4>
+						<pre><code>TitanStorage.getInstance().listRegions().then(data => console.log(data));</code></pre>
+
+						<h4>Parameters</h4>
+						<p>This function does not accept any parameters.</p>
+
+						<h4>Returns</h4>
+						<p>The returned Promise resolves to an object with the following structure:</p>
+
+						<pre><code class="json-code">
+{
+  "code": 0,
+  "data": {
+    "area_maps": [
+      { "key": "China", "value": "China" },
+      { "key": "HongKong","value": "HongKong" }
+    ],
+    "list": [
+      "China",
+      "HongKong"
+    ]
+  }
+}
+                    </code></pre>
+
+						<h4>Data Structure</h4>
+						<p>The returned object contains the following fields:</p>
+						<ul>
+							<li><strong>code</strong>: Status code of the request, 0 indicates success.</li>
+							<li><strong>msg</strong>: Message describing the result, returned when the status code is
+								not 0.</li>
+							<li><strong>data</strong>: An object that contains two fields:
+								<ul>
+									<li><strong>area_maps</strong>: An array of objects representing key-value pairs for
+										each area, for example
+										<pre><code>{ "key": "China", "value": "China" }</code></pre>
+									</li>
+									<li><strong>list</strong>: An array containing the names of all areas, for example
+										<pre><code>["China", "UnitedStates", "Vietnam", ...]</code></pre>
+									</li>
+								</ul>
+							</li>
+						</ul>
+
+						<h4>Error Handling</h4>
+						<p>If an error occurs during the fetching process, the <code>code</code> will be non-zero, and
+							the <code>msg</code> will provide details about the error.</p>
+
+						<h4>Important Note</h4>
+						<p>Always check the status of the response to handle different outcomes appropriately.</p>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+
+				const sdk = TitanStorage.getInstance();
+				sdk.listRegions()
+					.then(res => {
+						console.log('res:', res);
+
+					})
+					.catch(error => {
+						console.error('error:', error);
+					});
+
+			});
+		</script>
+
+	</body>
+
+</html>

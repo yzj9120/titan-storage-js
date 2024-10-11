@@ -1,0 +1,93 @@
+<!doctype html>
+<html class="default no-js">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Titan Storage SDK Documentation</title>
+		<meta name="description" content="Documentation for Titan Storage SDK">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/TitanStorage.css">
+		<script src="./js/TitanStorage.js"></script>
+	</head>
+
+	<body>
+		<div class="container container-main">
+			<div class="row">
+				<div class="col-12 col-content">
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+						<a name="share" class="tsd-anchor"></a>
+						<h3>createSharedLink</h3>
+						<p>This method allows you to share a specific asset with optional parameters for expiration and
+							security. It validates the provided inputs before sending the request to the server.</p>
+
+						<h4>Function Signature</h4>
+						<pre><code>const result = await createSharedLink({ id, expireAt, shortPass });</code></pre>
+
+						<p>This method sends a request to share the specified asset with the given parameters.</p>
+
+						<h4>Example</h4>
+						<pre><code>const result = await createSharedLink(
+					{
+						id: 256,
+						expireAt: 2, 
+						shortPass: 'secure123'
+					});
+					if (result.code === 0) {
+						console.log(result.data); // Success
+					} else {
+						console.error(result.message); // Failure
+					}</code></pre>
+
+						<h4>Parameters</h4>
+						<ul>
+							<li><strong>id</strong>: <code>Object</code> - Group ID or Asset CID, cannot be empty.</li>
+							<li><strong>expireAt</strong>: <code>Number</code> - Share expiration date (in days),
+								default is permanent. If provided, the input value must be a positive integer.</li>
+							<li><strong>shortPass</strong>: <code>String</code> - The access password is not mandatory.
+								When it is not empty (a password consisting of 6 digits and letters), it needs to be
+								verified whether it is valid.</li>
+						</ul>
+
+						<h4>Returns</h4>
+						<p>This function returns a Promise which resolves to an object containing:</p>
+						<ul>
+							<li><strong>code</strong>: A number representing the result of the operation (0 for success,
+								other values indicate failure).</li>
+							<li><strong>data</strong>: The result of the share operation if successful, containing
+								information about the shared asset.</li>
+							<li><strong>msg</strong>: A string describing the outcome of the operation, especially in
+								case of errors.</li>
+						</ul>
+
+						<h4>Error Handling</h4>
+						<p>If the share operation fails, the <code>code</code> will be non-0, and the
+							<code>message</code> will provide details about the error, such as invalid asset details,
+							expiration time, or server-related issues.
+						</p>
+
+						<h4>Important Note</h4>
+						<p>Ensure that the <code>id</code> is correctly specified and that
+							<code>expireAt</code> and <code>shortPass</code> (if provided) comply with the required
+							formats to avoid unnecessary errors. The method uses validators to check the input values,
+							returning any validation errors if the inputs are invalid.
+						</p>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const sdk = TitanStorage.getInstance();
+				sdk.createSharedLink({
+					id: 256, // bafybeiamqu7byo4pqjpdri56km2vv63siifoao3nmm6kuwoof3galdunjy
+					// expireAt: 2,
+					// shortPass: 'secure123'
+				});
+			});
+		</script>
+
+	</body>
+
+</html>

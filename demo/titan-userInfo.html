@@ -1,0 +1,75 @@
+<!doctype html>
+<html class="default no-js">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Titan Storage 1.0.0 Documentation</title>
+		<meta name="description" content="Documentation for Titan Storage SDK v1.0.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/TitanStorage.css">
+		<script src="./js/TitanStorage.js"></script>
+	</head>
+
+	<body>
+		<div class="container container-main">
+			<div class="row">
+				<div class="col-12 col-content">
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+						<a name="userInfo" class="tsd-anchor"></a>
+						<h3>getUserProfile</h3>
+						<p>This method retrieves information about the current user. It communicates with the server to
+							fetch the user details.</p>
+
+						<h4>Function Signature</h4>
+						<pre><code>const userInfo = await getUserProfile();</code></pre>
+
+						<h4>Example</h4>
+						<pre><code>
+const userInfo = await getUserProfile();
+if (userInfo.code === 0) {
+   //success
+} else {
+  // fail
+}</code></pre>
+
+						<h4>Returns</h4>
+						<p>This function returns a Promise which resolves to an object containing:</p>
+						<ul>
+							<li><strong>code</strong>: A number representing the result of the operation (0 for success,
+								other values indicate failure).</li>
+							<li><strong>data</strong>: An object containing the user information if the operation is
+								successful.</li>
+							<li><strong>msg</strong>: A string describing the outcome of the operation, especially in
+								case of errors.</li>
+						</ul>
+
+						<h4>Error Handling</h4>
+						<p>If the retrieval fails, the <code>code</code> will be non-200, and the <code>message</code>
+							will provide details about the error, such as server-related issues or network errors.</p>
+
+						<h4>Important Note</h4>
+						<p>Ensure that the server is reachable before calling this method to avoid unnecessary errors.
+						</p>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const sdk = TitanStorage.getInstance();
+				// Example usage of userInfo method
+				sdk.getUserProfile()
+					.then(data => {
+						console.log('User information retrieved successfully:', data);
+					})
+					.catch(error => {
+						console.error('Error retrieving user information:', error);
+					});
+			});
+		</script>
+
+	</body>
+
+</html>

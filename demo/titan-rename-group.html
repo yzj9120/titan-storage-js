@@ -1,0 +1,75 @@
+<!doctype html>
+<html class="default no-js">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Titan Storage SDK Documentation</title>
+		<meta name="description" content="Documentation for Titan Storage SDK">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/TitanStorage.css">
+		<script src="./js/TitanStorage.js"></script>
+	</head>
+
+	<body>
+		<div class="container container-main">
+			<div class="row">
+				<div class="col-12 col-content">
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+						<a name="renameGroup" class="tsd-anchor"></a>
+						<h3>renameFolder</h3>
+						<p>This method allows you to rename a group by specifying its group ID and the new name. It validates the provided inputs before sending the request to the server.</p>
+
+						<h4>Function Signature</h4>
+						<pre><code>const result = await renameFolder({ groupId, name });</code></pre>
+
+						<p>This method sends a request to rename an existing group on the server.</p>
+
+						<h4>Example</h4>
+						<pre><code>const result = await renameFolder({ groupId: 10, name: 'Updated Group' });
+if (result.code === 0) {
+    console.log(result.data); // Success
+} else {
+    console.error(result.message); // Failure
+}</code></pre>
+
+						<h4>Parameters</h4>
+						<ul>
+							<li><strong>groupId</strong>: <code>Number</code> - The ID of the group to rename. This is a required parameter and must be a valid group ID.</li>
+							<li><strong>name</strong>: <code>String</code> - The new name for the group. This is a required parameter and must be a valid string.</li>
+						</ul>
+
+						<h4>Returns</h4>
+						<p>This function returns a Promise which resolves to an object containing:</p>
+						<ul>
+							<li><strong>code</strong>: A number representing the result of the operation (0 for success, other values indicate failure).</li>
+							<li><strong>data</strong>: The updated group object if the operation is successful.</li>
+							<li><strong>msg</strong>: A string describing the outcome of the operation, especially in case of errors.</li>
+						</ul>
+
+						<h4>Error Handling</h4>
+						<p>If the rename operation fails, the <code>code</code> will be non-200, and the <code>message</code> will provide details about the error, such as an invalid group name, invalid group ID, or server-related issues.</p>
+
+						<h4>Important Note</h4>
+						<p>Ensure that both <code>groupId</code> and <code>name</code> parameters are valid before calling the method to avoid unnecessary errors. The method uses validators to check the input values, and it will return any validation errors if the inputs are invalid.</p>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const sdk = TitanStorage.getInstance();
+				sdk.renameFolder({ groupId: 263, name: 'Updated Group' })
+					.then(data => {
+						console.log('Group renamed successfully:', data);
+					})
+					.catch(error => {
+						console.error('Error renaming group:', error);
+					});
+			});
+		</script>
+
+	</body>
+
+</html>

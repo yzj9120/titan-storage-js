@@ -1,0 +1,90 @@
+<!doctype html>
+<html class="default no-js">
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Titan Storage 1.0.0 Documentation</title>
+		<meta name="description" content="Documentation for Titan Storage SDK v1.0.0">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="css/TitanStorage.css">
+		<script src="./js/TitanStorage.js"></script>
+	</head>
+
+	<body>
+		<div class="container container-main">
+			<div class="row">
+				<div class="col-12 col-content">
+					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+						<a name="initSdk" class="tsd-anchor"></a>
+						<h3>Initialize the Titan Storage SDK</h3>
+						<p>To begin using the Titan Storage SDK, you first need to initialize it. This involves
+							providing your token, URL, and setting the debug mode.</p>
+
+						<h4>Function Signature</h4>
+						<pre><code>const result = TitanStorage.initialize({ token: 'your-token', url: 'your-url', debug: true });</code></pre>
+
+						<p>This method initializes the SDK and ensures that it is only initialized once. It returns a
+							result containing a status code and message.</p>
+
+						<h4>Example</h4>
+						<pre><code>const result = TitanStorage.initialize({ token: 'your-token', url: 'your-url', debug: true });
+if (result.code === 0) {
+    console.log(result.msg); // Success
+} else {
+    console.error(result.msg); // Failure
+}</code></pre>
+
+						<h4>Parameters</h4>
+						<ul>
+							<li><strong>token</strong>: <code>String</code> - Your token for the SDK. This parameter is
+								required for authentication and must not be empty.</li>
+							<li><strong>url</strong>: <code>String</code> - The URL for the SDK endpoint. This parameter
+								must be provided.</li>
+							<li><strong>debug</strong>: <code>Boolean</code> - Whether to enable debug mode. The default
+								value is <code>true</code>.</li>
+						</ul>
+
+						<h4>Returns</h4>
+						<p>This function returns an object containing:</p>
+						<ul>
+							<li><strong>code</strong>: A number representing the result of the initialization (0 for
+								success, other values indicate failure).</li>
+							<li><strong>msg</strong>: A string describing the outcome of the initialization.</li>
+						</ul>
+
+						<h4>Error Handling</h4>
+						<p>If the initialization fails, the <code>code</code> will be non-zero, and the <code>msg</code>
+							will provide details about the error, such as an invalid token or if the SDK was already
+							initialized.</p>
+
+						<h4>Important Note</h4>
+						<p>If the SDK is not initialized correctly, you may lose access to certain features. Always
+							check the result of the initialization method.</p>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				try {
+					const result = TitanStorage.initialize({
+						token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjg1NDk3MDUsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyODQ2MzMwNSwicm9sZSI6MH0.qBw3BBHSC3piHmiwGawOMD14xkBZ9SnueeqAUfL5uX4',
+						url: null,
+						debug: true
+					});
+					if (result.code === 0) {
+						console.log(result.msg); // Success
+					} else {
+						console.error(result.msg); // Failure
+					}
+				} catch (error) {
+					console.error('Error initializing TitanSDK:', error);
+				}
+			});
+		</script>
+
+	</body>
+
+</html>

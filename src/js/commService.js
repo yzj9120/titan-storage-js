@@ -29,7 +29,6 @@ class CommService {
     }
   }
 
-
   /**
    * Retrieves the area ID.
    * @returns {Promise<Object>} Area ID data.
@@ -215,19 +214,22 @@ class CommService {
 
   async getAssetGroupInfo(options = { cId: -1, groupId: -1 }) {
     try {
-      if (options.cId == -1 || groupId == -1) {
-        return onHandleError(StatusCodes.ID_KEY_EMPTY, " ID is required.");
+
+
+      if (options.cId === -1 && options.groupId === -1) {
+        return onHandleError(StatusCodes.ID_KEY_EMPTY, "At least one ID (cId or groupId) is required.");
       }
 
-      if (options.cId != -1) {
+
+      if (options.cId) {
         const data = await this.Http.getData(
-          `/api/v1/storage/get_asset_group_info?cid==${options.cId}`
+          `/api/v1/storage/get_asset_group_info?cid=${options.cId}`
         );
         log("TitanSDK:getAssetGroupInfo:", data);
         return data;
-      } else if (options.groupId != -1) {
+      } else if (options.groupId) {
         const data = await this.Http.getData(
-          `/api/v1/storage/get_asset_group_info?groupid==${options.groupId}`
+          `/api/v1/storage/get_asset_group_info?groupid=${options.groupId}`
         );
         log("TitanSDK:getAssetGroupInfo:", data);
         return data;
@@ -308,6 +310,7 @@ class CommService {
   }
   async onShare(
     options = {
+      id:null,
       assetDetail: {},
       expireAt: null,
       shortPass: "",
@@ -391,11 +394,23 @@ class CommService {
 
   async onFileUpload(
     file,
-    assetData = { areaId: [], groupId: 0, assetType: 0,extraId:"" },
-    onProgress
+    assetData = {
+      areaId: [],
+      groupId: 0,
+      assetType: 0,
+      extraId: "",
+      retryCount: 2,
+    },
+    onProgress,
+    onStreamStatus
   ) {
     this.uploadLoader = new UploadLoader(this.Http);
-    return await this.uploadLoader.onFileUpload(file, assetData, onProgress);
+    return await this.uploadLoader.onFileUpload(
+      file,
+      assetData,
+      onProgress,
+      onStreamStatus
+    );
   }
 
   ///下载
@@ -416,11 +431,15 @@ class CommService {
       }
       const fileName = getFileNameFromUrl(urls[0]);
       const filesize = res.data.size;
+      const traceId = res.data.trace_id;
+
       // 实例化 Downloader
-      const downloader = new Downloader();
+      const downloader = new Downloader(this.Http);
       if (assetType == "folder") {
         return await downloader.downloadFromMultipleUrls(
           urls,
+          traceId,
+          assetCid,
           fileName,
           filesize,
           onProgress
@@ -432,7 +451,13 @@ class CommService {
           }
         });
         // 开始下载文件
-        return await downloader.downloadFile(urls, fileName, filesize);
+        return await downloader.downloadFile(
+          urls,
+          traceId,
+          assetCid,
+          fileName,
+          filesize
+        );
       } else {
         return onHandleError(StatusCodes.Dowload_Type_ERROR, "");
       }

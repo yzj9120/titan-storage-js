@@ -7,12 +7,12 @@ export class Http {
     this.url = url;
     this.debug = debug;
     // dev
-    this.url = "/apis";
+    // this.url = "/apis";
     // build
 
-    // if (!this.url) {
-    //   this.url = "https://api-test1.container1.titannet.io";
-    // }
+    if (!this.url) {
+      this.url = "https://api-test1.container1.titannet.io";
+    }
     if (!token || token.trim() === "") {
       log(StatusCodes.API_KEY_EMPTY, "");
     }
@@ -48,7 +48,6 @@ export class Http {
       },
     })
       .then((response) => {
-        console.log("response", response);
         if (response.ok) {
           return response.json();
         } else {
@@ -71,8 +70,6 @@ export class Http {
       return onHandleError(StatusCodes.API_KEY_EMPTY, "");
     }
     log("Posting data to URL:", requestUrl);
-    log("Request body:", body);
-
     return fetch(requestUrl, {
       method: "POST",
       headers: {
@@ -85,8 +82,11 @@ export class Http {
         if (response.ok) {
           return response.json();
         } else {
+          // 返回错误状态码和文本
           return response.text().then((errorText) => {
-            onHandleError(response.status, errorText);
+            // 处理特定的 HTTP 错误
+            const errorMessage = `Error ${response.status}: ${errorText}`;
+            return Promise.reject(onHandleError(response.status, errorMessage));
           });
         }
       })
@@ -95,6 +95,8 @@ export class Http {
         return data;
       })
       .catch((error) => {
+        log("Data posted error:", error);
+        // 捕获网络错误和 Promise.reject 中的错误
         return onHandleError(StatusCodes.FETCH_ERROR, error.message);
       });
   }
@@ -124,35 +126,33 @@ export class Http {
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable && onProgress) {
           const percentComplete = (event.loaded / event.total) * 100;
-          //console.log(`Address ${endpoint} :progress: ${percentComplete}%`);
           onProgress(event.loaded, event.total, percentComplete);
         }
       };
-      // Handle successful response
       xhr.onload = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
           const responseData = JSON.parse(xhr.responseText);
           log("File uploaded successfully:", responseData);
           resolve(responseData);
         } else {
+          log("File uploaded:", xhr.status);
           reject(onHandleError(xhr.status, xhr.responseText));
         }
       };
-
       // Handle errors
       xhr.onerror = () => {
+        const errorMessage = `File upload failed: ${xhr.statusText || "Handle network errors"}`;
         reject(
-          onHandleError(
-            StatusCodes.FETCH_ERROR,
-            "Network error or failed to upload file."
-          )
+          onHandleError(StatusCodes.FETCH_ERROR, errorMessage)
         );
       };
 
       // Handle request abortion
       signal.addEventListener("abort", () => {
         xhr.abort();
-        reject(new Error("Upload aborted"));
+        // reject(
+        //   onHandleError(StatusCodes.FETCH_ERROR, "Upload aborted")
+        // );
       });
 
       const formData = new FormData();
