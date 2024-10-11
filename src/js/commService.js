@@ -3,9 +3,9 @@ import { log, onHandleError } from "./errorHandler";
 import StatusCodes from "./codes";
 import { Validator } from "./validators";
 
-import Downloader from "./Downloader";
-import UploadLoader from "./UploadLoader";
-import ShareLoader from "./ShareLoader"; // 导入 ShareLoader
+import Downloader from "./downloader";
+import UploadLoader from "./uploadLoader";
+import ShareLoader from "./shareLoader"; // 导入 ShareLoader
 
 class CommService {
   constructor(Http) {
