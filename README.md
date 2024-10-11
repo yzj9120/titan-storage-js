@@ -31,8 +31,8 @@ Below are the potential errors that the SDK may throw. Please refer to the table
 |------------|-----------------------------------|-----------------------------------------------------|
 | 1001      | SDK Initialization Exception      | Generally caused by an incorrect app key; check console logs for details. |
 | 1002      | SDK Initialization Failed         | Generally indicates an exception during SDK initialization; check console logs. |
-| 1005      | File or Folder Name Error        | Generally due to incorrect parameters; check console logs. |
-| 1006      | ID Parameter Error               | Generally due to incorrect parameters; check console logs. |
+| 1005      | File or Folder Name Error         | Generally due to incorrect parameters; check console logs. |
+| 1006      | ID Parameter Error                | Generally due to incorrect parameters; check console logs. |
 | 1007      | Share Failed                     | Generally due to unsupported sharing; check console logs. |
 | 1008      | Data Format Error                | Generally indicates a data format error; check console logs. |
 | 1009      | Incorrect Share Password          | Generally indicates a data format error; check console logs. |
@@ -47,8 +47,12 @@ Below are the potential errors that the SDK may throw. Please refer to the table
 | 10018     | File Type Not Found               | Check console logs for details.                      |
 | 10019     | Download Address Error            | Server returned an incorrect or unusable address; check console logs. |
 | 10020     | Download Exception                | Check console logs for details.                      |
-| 10021     | Incorrect File ID Verification     | Check console logs for details.                      |
+| 10021     | Incorrect File ID Verification    | Check console logs for details.                      |
 | 10022     | Download Type Not Found           | Check console logs for details.                      |
+| 10023     | Download Type Not Found           | Check console logs for details.                      |
+| 10024     | Report  Exception                 | Check console logs for details.                      |
+| 10025     | ASSET Type Not Found              | Check console logs for details.                      |
+| 10026     | Share  Exception                    | Check console logs for details.                      |
 | 99999      | Unknown Error                    |                                                       |
 
 --- 
