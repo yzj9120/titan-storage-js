@@ -22,6 +22,7 @@ class TitanStorage {
     try {
       const status = Validator.validateApiKey(options.token);
 
+      console.log("initialize",options.token)
       if (status) {
         log(status);
         return status;

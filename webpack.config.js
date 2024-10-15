@@ -69,6 +69,7 @@ const commonConfig = {
     maxAssetSize: 1500000,
     maxEntrypointSize: 1500000,
   },
+  
 };
 
 const umdConfig = {
@@ -79,6 +80,7 @@ const umdConfig = {
     library: "TitanStorage",
     libraryTarget: "umd",
     globalObject: "this",
+    libraryExport: "default",
   },
 };
 

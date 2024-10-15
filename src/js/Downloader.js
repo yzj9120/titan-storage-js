@@ -34,6 +34,9 @@ class Downloader {
     this.report = new Report(Http);
     this.mimeType = "application/octet-stream";
     this.lock = new SimpleLock();
+
+    this.paused = false;  // 添加暂停状态
+
   }
 
   setProgressCallback(callback) {
