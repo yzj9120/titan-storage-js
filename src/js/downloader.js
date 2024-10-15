@@ -141,7 +141,8 @@ class Downloader {
         });
       });
       this.report.creatReportData(uploadResults, "download");
-      return { code: 0, msg: "Download successful" };
+      return Promise.resolve({ code: 0, msg: "Download successful" });
+
     } catch (error) {
       // Handle error reporting
       urls.forEach((url) => {
@@ -218,10 +219,10 @@ class Downloader {
 
     await Promise.all(downloadQueue);
 
-    if (this.failedChunks.length > 0) {
-      log(`Retrying failed chunks...`);
-      await this.retryMissingChunks(this.failedChunks, availableUrls);
-    }
+    // if (this.failedChunks.length > 0) {
+    //   log(`Retrying failed chunks...`);
+    //   await this.retryMissingChunks(this.failedChunks, availableUrls);
+    // }
   }
 
   async retryMissingChunks(failedChunks, urls) {
@@ -361,7 +362,10 @@ class Downloader {
               log: "",
             });
             this.report.creatReportData(uploadResults, "download");
-            return result; // 返回下载成功的结果
+
+            return Promise.resolve(result);
+
+            // 返回下载成功的结果
           } catch (error) {
             attempts++;
             if (successfulDownload) return; // 如果已成功下载，跳出重试循环
@@ -390,10 +394,23 @@ class Downloader {
 
     const results = await Promise.allSettled(downloadPromises); // 等待所有下载完成
 
+
     // 如果有成功的下载，返回第一个成功的结果，否则返回失败结果
+
+    //log(123,results)
+
+    // return successfulDownload
+    //   ? { code: 0, msg: 'Download successful' }
+    //   : { code: -1, msg: 'Download failed' };
+
+
     return successfulDownload
-      ? results.find((result) => result && result.code === 0)
+      ? results.find(
+        (result) => result.status === "fulfilled" && result.value && result.value.code === 0
+      )?.value // 返回找到的结果的 value
+      || { code: -1, msg: "No successful download result found" } // 如果未找到有效的 value
       : { code: -1, msg: "All url download failed" };
+
   }
 
 

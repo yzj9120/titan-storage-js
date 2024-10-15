@@ -65,12 +65,12 @@
             document.getElementById('downloadButton').addEventListener('click', async () => {
                 const assetCid = 'bafybeign3m5urnsfloe4zv5vpeajzng6zb2gyd4ppph2ta3bxnsssho2ii'; // Replace with actual CID
                 const assetType = 'file'; // or 'folder'
-                const res = await sdk.downloadAsset(assetCid, assetType, (loaded, total, percent) => {
-                    console.log(`Download Progress: ${percent.toFixed(2)}% (${loaded}/${total})`);
+                const res = await sdk.downloadAsset(assetCid, assetType, (progress) => {
+                   console.log(`下载进度: ${progress}%`);
                 });
-
                 console.log("Download result:", res);
             });
+		
         });
     </script>
 

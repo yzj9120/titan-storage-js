@@ -22,26 +22,33 @@ class TitanStorage {
     try {
       const status = Validator.validateApiKey(options.token);
 
-      console.log("initialize",options.token)
       if (status) {
         log(status);
         return status;
       }
 
-      if (!TitanStorage.instance) {
-        localStorage.setItem("options", JSON.stringify(options));
-        TitanStorage.instance = new TitanStorage(options);
-        // 返回初始化成功状态
-        const successStatus = onHandleError(StatusCodes.Sdk_OK, "");
-        log(successStatus);
-        return successStatus;
-      }
+      localStorage.setItem("titanOptions", JSON.stringify(options));
+      TitanStorage.instance = new TitanStorage(options);
+      // 返回初始化成功状态
+      const successStatus = onHandleError(StatusCodes.Sdk_OK, "");
+      log(successStatus);
+      return successStatus;
 
-      log("SDK has already been initialized.");
-      return onHandleError(
-        StatusCodes.Sdk_OK,
-        "SDK has already been initialized."
-      );
+
+      // if (!TitanStorage.instance) {
+      //   localStorage.setItem("options", JSON.stringify(options));
+      //   TitanStorage.instance = new TitanStorage(options);
+      //   // 返回初始化成功状态
+      //   const successStatus = onHandleError(StatusCodes.Sdk_OK, "");
+      //   log(successStatus);
+      //   return successStatus;
+      // }
+
+      // log("SDK has already been initialized.");
+      // return onHandleError(
+      //   StatusCodes.Sdk_OK,
+      //   "SDK has already been initialized."
+      // );
     } catch (error) {
       const errorStatus = onHandleError(
         StatusCodes.InitSdk_ERROR,
@@ -58,7 +65,7 @@ class TitanStorage {
    */
   static getInstance() {
     if (!TitanStorage.instance) {
-      const options = JSON.parse(localStorage.getItem("options"));
+      const options = JSON.parse(localStorage.getItem("titanOptions"));
       var statue = Validator.validateApiKey(options.token);
       if (statue) {
         log(statue);

@@ -120,12 +120,13 @@ class UploadLoader {
     try {
       const assetResponse = await Promise.any(uploadPromises);
       this.report.creatReportData(uploadResults, "upload");
+      assetResponse.cId = options.asset_cid ?? "";
       return assetResponse;
     } catch {
       this.report.creatReportData(uploadResults, "upload");
       return {
         code: StatusCodes.UPLOAD_FILE_ERROR,
-        mes: "All upload addresses failed.",
+        msg: "All upload addresses failed.",
       };
     }
   }
@@ -288,6 +289,15 @@ class UploadLoader {
               node_id: address.NodeID,
               extra_id: extraId,
             });
+            if (res.err == 1017) {
+              return Promise.resolve({
+                code: 0,
+                msg: "",
+                cid: uploadResult.cid
+              });
+            }
+            res.msg = res.msg ?? "Upload success"
+            res.cid = uploadResult.cid
             return Promise.resolve(res);
           }
         } else {
@@ -338,7 +348,7 @@ class UploadLoader {
       this.report.creatReportData(uploadResults, "upload");
       return {
         code: StatusCodes.UPLOAD_FILE_ERROR,
-        mes: "All upload addresses failed.",
+        msg: "All upload addresses failed.",
       };
     }
   }
@@ -408,6 +418,12 @@ class UploadLoader {
                     reject,
                     onWritableStream
                   );
+                } else if (assetResponse.err == 1017) {
+                  resolve({
+                    code: 0,
+                    meg: "Upload success",
+                    cid: rootCID.toString()
+                  });
                 } else {
                   resolve(assetResponse);
                 }
@@ -419,7 +435,7 @@ class UploadLoader {
               if (onWritableStream) onWritableStream("abort");
               reject({
                 code: StatusCodes.UPLOAD_FILE_ERROR,
-                mes: "File upload failed: " + error,
+                msg: "File upload failed: " + error,
               });
             },
           })
@@ -466,7 +482,7 @@ class UploadLoader {
         } else {
           reject({
             code: StatusCodes.UPLOAD_FILE_ERROR,
-            mes: "File upload failed after multiple attempts.",
+            msg: "File upload failed after multiple attempts.",
           });
         }
       }

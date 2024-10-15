@@ -109,7 +109,8 @@ export function handleError(statusCode, errorMessage) {
 }
 
 export function log(message, data = {}, debug = true) {
-  if (debug) {
+  const options = JSON.parse(localStorage.getItem("titanOptions"));
+  if (options.debug) {
     if (Object.keys(data).length > 0) {
       console.log(message, data);
     } else {

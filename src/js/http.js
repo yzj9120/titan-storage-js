@@ -57,7 +57,7 @@ export class Http {
         }
       })
       .then((data) => {
-        log("Data fetched successfully:", data);
+        log("fetched successfully:", data);
         return data;
       })
       .catch((error) => {

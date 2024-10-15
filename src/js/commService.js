@@ -310,7 +310,7 @@ class CommService {
   }
   async onShare(
     options = {
-      id:null,
+      id: null,
       assetDetail: {},
       expireAt: null,
       shortPass: "",
@@ -436,14 +436,18 @@ class CommService {
       // 实例化 Downloader
       const downloader = new Downloader(this.Http);
       if (assetType == "folder") {
-        return await downloader.downloadFromMultipleUrls(
+        var downresult = await downloader.downloadFromMultipleUrls(
           urls,
           traceId,
           assetCid,
           fileName,
           filesize,
           onProgress
-        );
+        )
+
+        log("downresult", downresult);
+
+        return downresult;
       } else if (assetType == "file") {
         downloader.setProgressCallback((progress) => {
           if (onProgress) {
@@ -451,13 +455,15 @@ class CommService {
           }
         });
         // 开始下载文件
-        return await downloader.downloadFile(
+        var downresult = await downloader.downloadFile(
           urls,
           traceId,
           assetCid,
           fileName,
           filesize
-        );
+        )
+        log("downresult.file", downresult);
+        return downresult;
       } else {
         return onHandleError(StatusCodes.Dowload_Type_ERROR, "");
       }
