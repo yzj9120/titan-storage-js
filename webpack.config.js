@@ -1,4 +1,4 @@
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
@@ -8,7 +8,7 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const fs = require("fs");
 
 function generateHtmlPlugins() {
-  const modulesDir = path.resolve(__dirname, "src"); 
+  const modulesDir = path.resolve(__dirname, "src");
   const htmlFiles = fs
     .readdirSync(modulesDir)
     .filter((file) => file.endsWith(".html"));
@@ -16,30 +16,20 @@ function generateHtmlPlugins() {
   return htmlFiles.map((file) => {
     return new HtmlWebpackPlugin({
       template: path.join(modulesDir, file),
-      filename: file, 
-      inject: "body", 
+      filename: file,
+      inject: "body",
     });
   });
 }
 
-module.exports = {
+const commonConfig = {
   entry: {
     TitanStorage: "./src/js/titanStorage.js",
   },
-
-  output: {
-    path: path.resolve(__dirname, "dist"),
-    filename: "[name].js", 
-    library: "TitanStorage",
-    libraryTarget: "umd", 
-    libraryExport: "default",
-    globalObject: "this", 
-  },
-
   module: {
     rules: [
       {
-        test: /\.js$/, 
+        test: /\.js$/,
         exclude: /node_modules/,
         use: {
           loader: "babel-loader",
@@ -49,12 +39,11 @@ module.exports = {
         },
       },
       {
-        test: /\.css$/, 
+        test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, "css-loader"],
       },
     ],
   },
-
   plugins: [
     ...generateHtmlPlugins(),
     new MiniCssExtractPlugin({
@@ -62,48 +51,57 @@ module.exports = {
     }),
     new CompressionPlugin({
       algorithm: "gzip",
-      test: /\.js(\?.*)?$/i, 
+      test: /\.js(\?.*)?$/i,
       threshold: 10240,
       minRatio: 0.8,
     }),
     new CopyWebpackPlugin({
-      patterns: [
-        { from: 'LICENSE.txt', to: 'LICENSE.txt' },  // 将 LICENSE.txt 文件复制到 dist 目录
-      ],
+      patterns: [{ from: "LICENSE.txt", to: "LICENSE.txt" }],
     }),
   ],
-
   mode: "production",
   optimization: {
     minimize: true,
-    minimizer: [
-      new TerserPlugin(),
-      new CssMinimizerPlugin(),
-    ],
+    minimizer: [new TerserPlugin(), new CssMinimizerPlugin()],
   },
-
   performance: {
     hints: "warning",
     maxAssetSize: 1500000,
     maxEntrypointSize: 1500000,
   },
+};
 
-  devServer: {
-    static: {
-      directory: path.join(__dirname, "dist"),
-    },
-    port: 9000,
-    open: true,
-    hot: true,
-    compress: true,
-    proxy: [
-      {
-        context: ['/apis'],
-        target: 'https://api-test1.container1.titannet.io',
-        changeOrigin: true,
-        secure: false,
-        pathRewrite: { '^/apis': '' },
-      },
-    ],
+const umdConfig = {
+  ...commonConfig,
+  output: {
+    filename: "TitanStorage.js",
+    path: path.resolve(__dirname, "dist/umd"),
+    library: "TitanStorage",
+    libraryTarget: "umd",
+    globalObject: "this",
   },
 };
+
+const esmConfig = {
+  ...commonConfig,
+  output: {
+    filename: "TitanStorage.js",
+    path: path.resolve(__dirname, "dist/esm"),
+    libraryTarget: "module",
+  },
+  experiments: {
+    outputModule: true,
+  },
+};
+
+const cjsConfig = {
+  ...commonConfig,
+  output: {
+    filename: "TitanStorage.js",
+    path: path.resolve(__dirname, "dist/cjs"),
+    libraryTarget: "commonjs2",
+  },
+};
+
+// 导出多个配置
+module.exports = [umdConfig, esmConfig, cjsConfig];

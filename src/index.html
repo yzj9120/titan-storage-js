@@ -109,8 +109,8 @@
 				</div>
 			</div>
 
-			<!-- <input type="file" id="fileInput" />
-			<button id="uploadButton">Upload File</button> -->
+			<input type="file" id="fileInput" />
+			<button id="uploadButton">Upload File</button>
 
 			<!-- 修改为选择文件夹 -->
 			<input type="file" id="fileInput" webkitdirectory multiple />
@@ -126,7 +126,7 @@
 		try {
 			// Initialize TitanSDK
 			TitanStorage.initialize({
-				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjg2NDAwMzMsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyODU1MzYzMywicm9sZSI6MH0.mB1jdd1FH6ZwmhqHGEZ-HNXQy8E0W59XBwzRSwA1ZMA', // Replace with actual app key
+				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjg5NTkzNDksImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyODg3Mjk0OSwicm9sZSI6MH0.2kqMaQq2iKNWLP54FUXOMAZIwNqQ2_RQ3yQHoWcIC5o', // Replace with actual app key
 				debug: true
 			});
 
@@ -220,7 +220,10 @@
 		const file = fileInput.files[0];
 		if (file) {
 			const sdk = TitanStorage.getInstance();
-			const assetData = { areaId: [], groupId: 0, assetType: 0, extraId: "52145655" };
+			// const assetData = { areaId: [], groupId: 0, assetType: 0, extraId: "52145655" };
+
+			const assetData = { groupId: 0, assetType: 0};
+
 			var res = await sdk.uploadAsset(file, assetData, (loaded, total, percent) =>
 				console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
 			);
@@ -234,6 +237,7 @@
 		const fileInput = document.getElementById('fileInput');
 		const files = fileInput.files;
 		const sdk = TitanStorage.getInstance();
+		
 		const assetData = { areaId: [], groupId: 0, assetType: 1 };
 		var res = await sdk.uploadAsset(files, assetData,
 			(loaded, total, percent) => {
