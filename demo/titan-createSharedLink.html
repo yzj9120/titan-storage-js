@@ -8,7 +8,7 @@
 		<meta name="description" content="Documentation for Titan Storage SDK">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="css/TitanStorage.css">
-		<script src="./js/TitanStorage.js"></script>
+		<script src="./js/umd/TitanStorage.js"></script>
 	</head>
 
 	<body>
@@ -34,9 +34,9 @@
 						shortPass: 'secure123'
 					});
 					if (result.code === 0) {
-						console.log(result.data); // Success
+						console.log(result); // Success
 					} else {
-						console.error(result.message); // Failure
+						console.error(result); // Failure
 					}</code></pre>
 
 						<h4>Parameters</h4>
@@ -80,7 +80,7 @@
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
 				const sdk = TitanStorage.getInstance();
-				sdk.createSharedLink({
+				var res = await sdk.createSharedLink({
 					id: 256, // bafybeiamqu7byo4pqjpdri56km2vv63siifoao3nmm6kuwoof3galdunjy
 					// expireAt: 2,
 					// shortPass: 'secure123'

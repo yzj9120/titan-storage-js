@@ -8,7 +8,7 @@
 		<meta name="description" content="Documentation for Titan Storage SDK v1.0.0">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="css/TitanStorage.css">
-		<script src="./js/TitanStorage.js"></script>
+		<script src="./js/umd/TitanStorage.js"></script>
 	</head>
 
 	<body>
@@ -28,9 +28,9 @@
 						<h4>Example</h4>
 						<pre><code>const result = await listDirectoryContents(1, 0, 10);
 if (result.code === 0) {
-    console.log(result.data); // Success, list of asset groups
+    console.log(result); // Success, list of asset groups
 } else {
-    console.error(result.message); // Failure</code></pre>
+    console.error(result); // Failure</code></pre>
 
 						<h4>Parameters</h4>
 						<ul>

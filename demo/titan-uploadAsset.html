@@ -8,7 +8,7 @@
 		<meta name="description" content="Documentation for Titan Storage SDK">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="css/TitanStorage.css">
-		<script src="./js/TitanStorage.js"></script>
+		<script src="./js/umd/TitanStorage.js"></script>
 	</head>
 
 	<body>
@@ -67,9 +67,9 @@ async function uploadAsset() {
     );
 
     if (result.code === 0) {
-        console.log('File uploaded successfully:', result.data);
+        console.log('File uploaded successfully:', result);
     } else {
-        console.error('Error uploading file:', result.msg);
+        console.error('Error uploading file:', result);
     }
 }
 </code></pre>
@@ -177,16 +177,13 @@ async function uploadAsset() {
 							// Handle the stream status updates
 							switch (status) {
 								case 'writing':
-									console.log(`Writing ${file.name}...`);
+									
 									break;
 								case 'close':
-									console.log(`Upload for ${file.name} closed.`);
 									break;
-								case 'abort':
-									console.log(`Upload for ${file.name} aborted.`);
+								case 'abort':					
 									break;
 								default:
-									console.warn(`Unknown status: ${status}`);
 							}
 						}
 					);
