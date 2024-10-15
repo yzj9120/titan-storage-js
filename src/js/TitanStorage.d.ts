@@ -2,10 +2,11 @@
 declare module "TitanStorage" {
 
     export default class TitanStorage {
-        constructor();
 
-        static initialize(options: {token: string;url: string; debug?: boolean; }): any;
+        constructor(options: { token: string; url: string; debug?: boolean; });
         static getInstance(): TitanStorage;
+
+        static initialize(options: { token: string; url: string; debug?: boolean; }): Promise<Object>;
 
         updateToken(newToken: string): Promise<any>;
 

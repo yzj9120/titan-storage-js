@@ -9,7 +9,7 @@ import { log, onHandleError } from "./errorHandler";
 class TitanStorage {
   static instance = null;
 
-  constructor({ token, url, debug = true }) {
+  constructor({ token, url, debug = false }) {
     this.commService = new CommService(new Http(token, url, debug));
     this.debug = debug;
   }
@@ -18,7 +18,7 @@ class TitanStorage {
    * @param {Object} options - Initialization parameters
    * @returns {Object} Initialization result
    */
-  static initialize(options = { token: "", debug: true, url: "" }) {
+  static initialize(options = { token: "", debug: false, url: "" }) {
     try {
       const status = Validator.validateApiKey(options.token);
 
