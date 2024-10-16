@@ -104,8 +104,9 @@ class ShareLoader {
       // 构建预览 URL
       let previewURL = `${baseURL}${path}?cid=${Cid}&AssetType=${AssetType}&address=${UserID}`;
 
-      if (!isNumeric && area_ids && area_ids.length > 0) {
-        const areaIdParams = area_ids.map(id => `area_id=${encodeURIComponent(id)}`).join("&");
+      if (area_ids && area_ids.length > 0) {
+        // const areaIdParams = area_ids.map(id => `area_id=${encodeURIComponent(id)}`).join("&");
+        const areaIdParams = `area_id=${encodeURIComponent(area_ids.join(','))}`;
         previewURL += `&${areaIdParams}`;
       }
 

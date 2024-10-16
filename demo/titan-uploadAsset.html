@@ -39,7 +39,7 @@ async function uploadAsset() {
     };
 
     const result = await uploadAsset(file, assetData, 
-        (progress) => console.log(`Upload progress: ${progress}%`) 
+        (loaded, total, percent) => console.log(`Upload progress: ${percent}%`) 
     );
 
     if (result.code === 0) {
@@ -62,7 +62,7 @@ async function uploadAsset() {
     };
 
     const result = await uploadAsset(file, assetData, 
-        (progress) => console.log(`Upload progress: ${progress}%`), 
+        (loaded, total, percent) => console.log(`Upload progress: ${percent}%`), 
         (status) => console.log(`Stream status: ${status}`)
     );
 

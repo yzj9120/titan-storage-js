@@ -12,9 +12,16 @@ We might have a new name, but we’re still delivering the same rock-solid decen
 TypeScript Environment
 In a TypeScript environment, you need to import both TitanStorage.js and TitanStorage.d.ts from the dist/esm directory. You can do this by including:
 
-import TitanStorage from './dist/esm/TitanStorage.js';					
+```typescript
+
+import TitanStorage from './dist/esm/TitanStorage.js';	
+
+```
+
 JavaScript Environment
 In a JavaScript environment, you should import TitanStorage.js from the dist/umd directory like this:
+
+```javascript
 
 import TitanStorage from './dist/umd/TitanStorage.js';
 
@@ -24,7 +31,9 @@ const result = TitanStorage.initialize({
             debug: false
         });
 
+```
 #### TitanStorage Object
+
 | Method                            | Description                                    |
 |-----------------------------------|------------------------------------------------|
 | TitanStorage.initialize              | Initialize the SDK                             |
