@@ -34,6 +34,7 @@ class Downloader {
         this.report = new Report(Http);
         this.mimeType = "application/octet-stream";
         this.lock = new SimpleLock();
+
         this.paused = false;  // 添加暂停状态
 
     }
@@ -395,6 +396,14 @@ class Downloader {
 
 
         // 如果有成功的下载，返回第一个成功的结果，否则返回失败结果
+
+        //log(123,results)
+
+        // return successfulDownload
+        //   ? { code: 0, msg: 'Download successful' }
+        //   : { code: -1, msg: 'Download failed' };
+
+
         return successfulDownload
             ? results.find(
                 (result) => result.status === "fulfilled" && result.value && result.value.code === 0

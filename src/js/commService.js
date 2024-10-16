@@ -422,19 +422,18 @@ class CommService {
       userId: "",
     }, onProgress) {
 
-    const { assetCid, assetType, userId } = options;
+    const { assetCid, assetType, userId,areaId } = options;
 
     const validateAssetCid = Validator.validateAssetCid(assetCid);
     if (validateAssetCid) return validateAssetCid;
     let url = `/api/v1/storage/share_asset?asset_cid=` + assetCid;
     if (userId) {
-      url = "/api/v1/storage/open_asset?user_id=" + uid + "&asset_cid=" + assetCid
+      url = "/api/v1/storage/open_asset?user_id=" + userId + "&asset_cid=" + assetCid
 
       if (areaId && areaId.length > 0) {
-        const areaIdParams = area_ids.map(id => `area_id=${encodeURIComponent(id)}`).join("&");
+        const areaIdParams = areaId.map(id => `area_id=${encodeURIComponent(id)}`).join("&");
         url += `&${areaIdParams}`;
       }
-
     }
     const res = await this.Http.getData(url);
 

@@ -10,19 +10,19 @@ The Web SDK consists of TitanStorage.
 #### TitanStorage Object
 | Method                            | Description                                    |
 |-----------------------------------|------------------------------------------------|
-| TitanStorage.initSdk              | Initialize the SDK                             |
-| TitanStorage.getAreaId           | Retrieve the list of area IDs from the scheduler |
-| TitanStorage.createGroup          | Create directories, including root and subdirectories |
-| TitanStorage.getAssetGroupList    | Retrieve a list of all folders and files      |
-| TitanStorage.renameGroup          | Rename a specific folder                       |
+| TitanStorage.initialize              | Initialize the SDK                             |
+| TitanStorage.listRegions           | Retrieve the list of area IDs from the scheduler |
+| TitanStorage.createFolder          | Create directories, including root and subdirectories |
+| TitanStorage.listDirectoryContents    | Retrieve a list of all folders and files      |
+| TitanStorage.renameFolder          | Rename a specific folder                       |
 | TitanStorage.renameAsset          | Rename a specific file                         |
-| TitanStorage.deleteGroup          | Delete a specific folder                       |
+| TitanStorage.deleteFolder          | Delete a specific folder                       |
 | TitanStorage.deleteAsset          | Delete a specific file                         |
-| TitanStorage.userInfo             | Retrieve user-related information              |
-| TitanStorage.getAssetGroupInfo    | Get detailed information about files/folders   |
-| TitanStorage.share                | Share file/folder data                         |
-| TitanStorage.fileUpload           | Upload files/folders                           |
-| TitanStorage.fileDownLoad         | Download files/folders                         |
+| TitanStorage.getUserProfile             | Retrieve user-related information              |
+| TitanStorage.getltemDetails    | Get detailed information about files/folders   |
+| TitanStorage.createSharedLink                | Share file/folder data                         |
+| TitanStorage.uploadAsset           | Upload files/folders                           |
+| TitanStorage.downloadAsset         | Download files/folders                         |
 
 ### Error Codes
 Below are the potential errors that the SDK may throw. Please refer to the table for handling suggestions.
