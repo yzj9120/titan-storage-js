@@ -6,14 +6,14 @@ class ShareLoader {
     this.Http = http; // 接收 Http 实例
   }
 
-  async onShare(options = { id: null, expireAt: null, shortPass: "", hasDay: false }) {
+  async onShare(options = { id: null, expireAt: null, shortPass: "", hasDay: false, hasDomain: true }) {
     try {
       // Validate options
       if (typeof options !== "object" || options === null) {
         return onHandleError(StatusCodes.ASSET_OBJ_ERROR, "Invalid options provided.");
       }
 
-      const { id, expireAt, shortPass, hasDay } = options;
+      const { id, expireAt, shortPass, hasDay, hasDomain } = options;
 
       // Validate id
       if (!id) {
@@ -67,14 +67,15 @@ class ShareLoader {
           expireAt: expireAt,
           shortPass: shortPass,
           area_ids: AreaIds,
-          hasDay: hasDay
+          hasDay: hasDay,
+          hasDomain: hasDomain
         };
 
         const data = await this.onCreateShareLink(createShareLinkOptions);
         return data;
       } else {
         // If already shared, update the existing share link
-        const updateShareLinkResponse = await this.onUpdateShareLink(UserID, Cid, expireAt, shortPass, hasDay);
+        const updateShareLinkResponse = await this.onUpdateShareLink(UserID, Cid, expireAt, shortPass, hasDay, hasDomain);
         return updateShareLinkResponse;
       }
     } catch (error) {
@@ -93,7 +94,8 @@ class ShareLoader {
     expireAt,
     shortPass,
     area_ids,
-    hasDay
+    hasDay,
+    hasDomain
   }) {
     try {
       const baseURL = "https://storage.titannet.io";
@@ -152,8 +154,12 @@ class ShareLoader {
 
         await this.Http.getData(shareStatusURL);
 
+        if (hasDomain) {
+          createLinkResponse.data.url = `${baseURL}${encodeURI(createLinkResponse.data.url)}`;
+        } else {
+          createLinkResponse.data.url = encodeURI(createLinkResponse.data.url);
+        }
         // 更新 URL 并返回结果
-        createLinkResponse.data.url = `${baseURL}${encodeURI(createLinkResponse.data.url)}`;
         return createLinkResponse;
       } else {
         // 返回错误信息
@@ -173,7 +179,7 @@ class ShareLoader {
     return Math.floor(futureDate.getTime() / 1000); // 返回时间戳（秒）
   }
 
-  async onUpdateShareLink(UserID, ID, expireAt, shortPass, hasDay) {
+  async onUpdateShareLink(UserID, ID, expireAt, shortPass, hasDay, hasDomain) {
 
     const shareLinkResponse = await this.Http.getData(`/api/v1/storage/share_link_info?username=${UserID}&cid=${ID}`);
     const { id, short_pass: originalShortPass, expire_at: originalExpireAt, short_link } = shareLinkResponse.data.link;
@@ -210,7 +216,12 @@ class ShareLoader {
     };
     var res = await this.Http.postData("/api/v1/storage/share_link_update", body);
     if (res.code == 0) {
-      res.data.url = "https://storage.titannet.io" + encodeURI(short_link);
+
+      if (hasDomain) {
+        res.data.url = "https://storage.titannet.io" + encodeURI(short_link);
+      } else {
+        res.data.url = encodeURI(short_link);
+      }
     }
     return res
 

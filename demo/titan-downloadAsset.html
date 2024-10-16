@@ -21,38 +21,46 @@
                     <p>This method handles the downloading of files or folders from Titan Storage.</p>
 
                     <h4>Function Signature</h4>
-                    <pre><code>const result = await downloadAsset(assetCid, assetType, onProgress);</code></pre>
+                    <pre><code>const result = await downloadAsset(options, onProgress);</code></pre>
 
                     <h4>Example</h4>
-                    <pre><code>const result = await sdk.downloadAsset(assetCid, assetType, (loaded, total, percent) => {
-    console.log(`Download Progress: ${percent.toFixed(2)}% (${loaded}/${total})`);
-});</code></pre>
+                    <pre><code>const options = {
+        areaId: [],
+        userId: "",
+        assetCid: "",
+        assetType: ""}
+	const result = await sdk.downloadAsset(options, (progress) => {
+		console.log(`Download Progress: ${progress}%`);
+	});
+                    </code></pre>
 
                     <h4>Parameters</h4>
                     <ul>
-                        <li><strong>assetCid</strong>: <code>*</code> - The CID of the file to be downloaded.</li>
+                        <li><strong>assetCid</strong>: <code>*</code> - The CID of the asset to be downloaded. This is a required parameter.</li>
                         <li><strong>assetType</strong>: <code>*</code> - The type of the asset:
                             <ul>
                                 <li><strong>file</strong>: Indicates that the asset is a file.</li>
                                 <li><strong>folder</strong>: Indicates that the asset is a folder.</li>
                             </ul>
                         </li>
-                        <li><strong>onProgress</strong>: <code>Function</code> - A callback function to handle the progress of the download. It receives the current loaded bytes, total bytes, and the percentage of completion as arguments.</li>
+                        <li><strong>userId</strong>: <code>String</code> - Optional. The ID of the user. Defaults to empty. Required for external downloads.</li>
+                        <li><strong>areaId</strong>: <code>Array</code> - Optional. An array of area IDs. Defaults to empty. This parameter allows the user to specify preferred download nodes; if not provided, the nearest node is automatically selected.</li>
+                        <li><strong>onProgress</strong>: <code>Function</code> - A callback function to handle the progress of the download. It receives a single argument representing the percentage of completion as a number.</li>
                     </ul>
 
                     <h4>Returns</h4>
                     <p>This function returns a Promise that resolves to an object containing:</p>
                     <ul>
-                        <li><strong>code</strong>: A number representing the result of the download operation.</li>
-                        <li><strong>data</strong>: The downloaded file or folder information upon success.</li>
+                        <li><strong>code</strong>: A number representing the result of the download operation (0 indicates success).</li>
+                        <li><strong>data</strong>: The downloaded file or folder information upon success, which includes details like file name, size, and path.</li>
                         <li><strong>msg</strong>: A string describing the outcome of the operation, especially in case of errors.</li>
                     </ul>
 
                     <h4>Error Handling</h4>
-                    <p>If the download operation fails, the <code>code</code> will be non-zero, and the <code>msg</code> will provide details about the error, such as invalid CID or server-related issues.</p>
+                    <p>If the download operation fails, the <code>code</code> will be non-zero, and the <code>msg</code> will provide details about the error, such as invalid CID, network issues, or server-related problems.</p>
 
                     <h4>Important Note</h4>
-                    <p>Ensure that the <code>assetCid</code> and <code>assetType</code> parameters are valid before calling the method to avoid unnecessary errors.</p>
+                    <p>Ensure that the <code>assetCid</code> and <code>assetType</code> parameters are valid before calling the method to avoid unnecessary errors. Providing an incorrect <code>userId</code> or <code>areaId</code> may also lead to failed downloads.</p>
                 </section>
             </div>
         </div>
@@ -63,14 +71,17 @@
             const sdk = TitanStorage.getInstance();
             // Example of file download
             document.getElementById('downloadButton').addEventListener('click', async () => {
-                const assetCid = 'bafybeign3m5urnsfloe4zv5vpeajzng6zb2gyd4ppph2ta3bxnsssho2ii'; // Replace with actual CID
-                const assetType = 'file'; // or 'folder'
-                const res = await sdk.downloadAsset(assetCid, assetType, (progress) => {
-                   console.log(`下载进度: ${progress}%`);
+                const options = {
+					// areaId: [”beijin“,"taibei"],
+					// userId: "titan1jh4ntfwyl9xqk9ehg2q7s44w99af939jcgrd2d",
+                    assetCid: "bafybeia5dwl3ueandx45ucb2276pmwmllhmwhyehugzxv2zypzfhtvcwcm",
+                    assetType: "folder", //file, folder 
+                }
+                const res = await sdk.downloadAsset(options, (progress) => {
+                    console.log(`下载进度: ${progress}%`);
                 });
                 console.log("Download result:", res);
             });
-		
         });
     </script>
 

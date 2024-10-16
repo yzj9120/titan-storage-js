@@ -32,6 +32,6 @@ declare module "TitanStorage" {
 
         uploadAsset(file: File, assetData: object, onProgress: Function, onStreamStatus: Function): Promise<any>;
 
-        downloadAsset(assetCid: string, assetType: string, onProgress: Function): Promise<any>;
+        downloadAsset(assetData: object, onProgress: Function): Promise<any>;
     }
 }

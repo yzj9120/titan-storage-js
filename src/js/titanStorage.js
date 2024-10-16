@@ -192,8 +192,8 @@ class TitanStorage {
    * @param {Object} options.id - Group ID or Asset CID, cannot be empty
    * @param {Number} options.expireAt - Share expiration date (in days), default is permanent. If provided, the input value must be a positive integer.
    * @param {string} options.shortPass - The access password is not mandatory. When it is not empty (a password consisting of 6 digits and letters), it needs to be verified whether it is valid
-      * @param {string} options.hasDay - Whether it is a day, default no, supports timestamp when false, supports days when true
-
+   * @param {string} options.hasDay - Whether it is a day, default no, supports timestamp when false, supports days when true
+   * @param {string} options.hasDomain -Whether to carry the domain name by default. If it is false, the domain name needs to be concatenated
   * @returns {Promise<Object>} Share result
    */
 
@@ -202,7 +202,8 @@ class TitanStorage {
       id: null,
       expireAt: null,
       shortPass: "",
-      hasDay: false
+      hasDay: false,
+      hasDomain: true
     }
   ) {
     const data = await this.commService.onShare(options);
@@ -228,15 +229,22 @@ class TitanStorage {
 
   /**
    * 文件/文件夹下载
-   * @param {*} assetCid  ：文件cid
-   * @param {*} assetType ：文件类型：file 文件 ；folder 文件夹
+  * @param {Object} options - downloadAsset parameters
+   * @param {*} options.assetCid  ：文件cid
+   * @param {*} options.assetType ：文件类型：file 文件 ；folder 文件夹
+   * @param {*} options.userId ：用户ID。非必填，默认为空。当需要在外部下载时需要提供userId
+   * @param {*} options.areaId ：区域ID。非必填，默认为空。自动选择最近的下载节点
    * @param {*} onProgress：进度条
    * @returns
    */
-  async downloadAsset(assetCid, assetType, onProgress) {
+  async downloadAsset(options = {
+    areaId: [],
+    assetCid: "",
+    assetType: "",
+    userId: "",
+  }, onProgress) {
     const data = await this.commService.onFileDown(
-      assetCid,
-      assetType,
+      options,
       onProgress
     );
     return data;

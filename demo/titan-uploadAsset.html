@@ -167,7 +167,8 @@ async function uploadAsset() {
 					const assetData = {
 						areaId: [],
 						groupId: 0,
-						assetType: 1
+						assetType: 1,
+						extraId: "52145655"
 					};
 					var res = await sdk.uploadAsset(files, assetData,
 						(loaded, total, percent) => {

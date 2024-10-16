@@ -313,7 +313,8 @@ class CommService {
       id: null,
       expireAt: null,
       shortPass: "",
-      hasDay
+      hasDay: false,
+      hasDomain: true
     }
   ) {
     try {
@@ -412,13 +413,29 @@ class CommService {
       onStreamStatus
     );
   }
-
   ///下载
-  async onFileDown(assetCid, assetType, onProgress) {
+  async onFileDown(
+    options = {
+      areaId: [],
+      assetCid: "",
+      assetType: "",
+      userId: "",
+    }, onProgress) {
+
+    const { assetCid, assetType, userId } = options;
+
     const validateAssetCid = Validator.validateAssetCid(assetCid);
     if (validateAssetCid) return validateAssetCid;
-
     let url = `/api/v1/storage/share_asset?asset_cid=` + assetCid;
+    if (userId) {
+      url = "/api/v1/storage/open_asset?user_id=" + uid + "&asset_cid=" + assetCid
+
+      if (areaId && areaId.length > 0) {
+        const areaIdParams = area_ids.map(id => `area_id=${encodeURIComponent(id)}`).join("&");
+        url += `&${areaIdParams}`;
+      }
+
+    }
     const res = await this.Http.getData(url);
 
     if (res.code === 0) {
@@ -471,7 +488,7 @@ class CommService {
       return res;
     }
   }
-  
+
 }
 
 export default CommService;

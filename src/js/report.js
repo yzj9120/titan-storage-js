@@ -20,7 +20,7 @@ class Report {
     try {
       // 构建报告数据对象
       const map = {
-        trace_id: traceId,
+        trace_id: traceId ?? "",
         cid: cid,
         node_id: nodeId,
         rate: rate,
