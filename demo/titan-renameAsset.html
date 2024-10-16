@@ -9,7 +9,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="css/TitanStorage.css">
 		<script src="./js/umd/TitanStorage.js"></script>
-		
+
 	</head>
 
 	<body>
@@ -121,28 +121,15 @@
 			document.addEventListener('DOMContentLoaded', function() {
 				const sdk = TitanStorage.getInstance();
 
-				sdk.getAssetGroupList({
-						page: 1,
-						parent: 0,
-						pageSize: 10
-					})
-					.then(res => {
-						// 检查是否有数据，并从中获取第一条的ID
-						const firstGroup = res?.data?.list?. [0]?.AssetOverview?.UserAssetDetail.Cid;
-						if (!firstGroup || !firstGroup.ID) {
-							throw new Error('No valid group found in the response.');
-						}
-						const firstCID = firstGroup.ID;
-						console.log('First Group ID:', firstGroupID);
+				TitanStorage.getInstance().renameAsset({
+					name: "修改名称",
+					assetId: "bafybeiakfko6hakzdqaz5k3eylo6rbw64l7cunjptwa6hwzvkh5rmanwpm"
+				}).then(res => {
+					console.log('createFolder:', res);
 
-
-						return sdk.renameAsset({
-							name: 'New Folder',
-							parent: firstCID
-						});
-					})
-					.then(data => {})
-					.catch(error => {});
+				}).catch(error => {
+					console.error('Error creating folder:', error);
+				});;
 
 
 			});

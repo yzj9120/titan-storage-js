@@ -192,7 +192,9 @@ class TitanStorage {
    * @param {Object} options.id - Group ID or Asset CID, cannot be empty
    * @param {Number} options.expireAt - Share expiration date (in days), default is permanent. If provided, the input value must be a positive integer.
    * @param {string} options.shortPass - The access password is not mandatory. When it is not empty (a password consisting of 6 digits and letters), it needs to be verified whether it is valid
-   * @returns {Promise<Object>} Share result
+      * @param {string} options.hasDay - Whether it is a day, default no, supports timestamp when false, supports days when true
+
+  * @returns {Promise<Object>} Share result
    */
 
   async createSharedLink(
@@ -200,6 +202,7 @@ class TitanStorage {
       id: null,
       expireAt: null,
       shortPass: "",
+      hasDay: false
     }
   ) {
     const data = await this.commService.onShare(options);

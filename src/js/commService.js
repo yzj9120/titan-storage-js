@@ -164,9 +164,9 @@ class CommService {
         log(validateGroupName);
         return validateGroupName;
       }
-      var validateGroupName = Validator.validateGroupName(assetId.name);
-      if (validateGroupName) {
-        return validateGroupName;
+      var validateAssetCid = Validator.validateAssetCid(options.assetId);
+      if (validateAssetCid) {
+        return validateAssetCid;
       }
 
       const body = {
@@ -175,7 +175,7 @@ class CommService {
       };
 
       const data = await this.Http.postData(
-        "/api/v1/storage/rename_asset",
+        "/api/v1/storage/rename_group",
         body
       );
       log("TitanSDK:renameAsset:", data);
@@ -311,9 +311,9 @@ class CommService {
   async onShare(
     options = {
       id: null,
-      assetDetail: {},
       expireAt: null,
       shortPass: "",
+      hasDay
     }
   ) {
     try {
@@ -471,6 +471,7 @@ class CommService {
       return res;
     }
   }
+  
 }
 
 export default CommService;

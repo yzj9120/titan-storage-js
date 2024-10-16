@@ -55,9 +55,7 @@
 
 
 							<tr>
-								<td><button id="renameFolder">renameAsset</button></td>
-
-
+								<td><button id="renameAsset">renameAsset</button></td>
 
 								<td>修改某一个文件名称</td>
 							</tr>
@@ -140,7 +138,7 @@
 			// Initialize TitanSDK
 			TitanStorage.initialize({
 				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjkwNDY2NjAsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyODk2MDI2MCwicm9sZSI6MH0.w7OJWZlFnppwYl0LpHOoQaTsaDE16knGKdsscZKPcQM', // Replace with actual app key
-				debug: false
+				debug: true
 			});
 
 
@@ -184,8 +182,9 @@
 				var id = res.data.group.ID;
 				sdk.createSharedLink({
 					id: id,
-					expireAt: 10,
-					shortPass: "qq0000"
+					expireAt: 1892520661,
+					shortPass: "qq0000",
+					hasDay:false ///是否支持使用天
 				}).then(res => {
 					console.log('createSharedLink:', res);
 				});
@@ -211,8 +210,31 @@
 
 		});
 
+		document.getElementById('renameFolder').addEventListener('click', async () => {
+			/// createFolder 
+			TitanStorage.getInstance().renameFolder({
+				name: "folder000",
+				groupId: 296
+			}).then(res => {
+				console.log('createFolder:', res);
 
+			}).catch(error => {
+				console.error('Error creating folder:', error);
+			});
+		});
+		document.getElementById('renameAsset').addEventListener('click', async () => {
+			/// createFolder 
+			TitanStorage.getInstance().renameAsset({
+				name: "修改名称",
+				assetId: "bafybeiakfko6hakzdqaz5k3eylo6rbw64l7cunjptwa6hwzvkh5rmanwpm"
+			}).then(res => {
+				console.log('createFolder:', res);
 
+			}).catch(error => {
+				console.error('Error creating folder:', error);
+			});
+		});
+		
 
 		document.getElementById('getltemDetails').addEventListener('click', async () => {
 			///getltemDetails
@@ -230,7 +252,7 @@
 
 		document.getElementById('downloadAsset').addEventListener('click', async () => {
 			///下载 ：文件类型：file,folder
-			TitanStorage.getInstance().downloadAsset('bafybeidk7rdglxzii7loithnfhdk4dtfyuwffpbcfzji5zv2morrnleg5i', "file", (progress) => {
+			TitanStorage.getInstance().downloadAsset('bafybeiakfko6hakzdqaz5k3eylo6rbw64l7cunjptwa6hwzvkh5rmanwpm', "file", (progress) => {
 				console.log(`下载进度: ${progress}%`);
 
 			})

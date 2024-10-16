@@ -31,7 +31,8 @@
 					{
 						id: 256,
 						expireAt: 2, 
-						shortPass: 'secure123'
+						shortPass: 'secure123'，
+						hasDay:true
 					});
 					if (result.code === 0) {
 						console.log(result); // Success
@@ -47,6 +48,8 @@
 							<li><strong>shortPass</strong>: <code>String</code> - The access password is not mandatory.
 								When it is not empty (a password consisting of 6 digits and letters), it needs to be
 								verified whether it is valid.</li>
+								
+								<li><strong>shortPass</strong>: <code>Number</code> - Does it support using days? Default is false. No, when false, expireAt supports timestamps, and when true, expireAt supports days.</li>
 						</ul>
 
 						<h4>Returns</h4>

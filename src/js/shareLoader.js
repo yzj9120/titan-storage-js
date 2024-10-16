@@ -6,14 +6,14 @@ class ShareLoader {
     this.Http = http; // 接收 Http 实例
   }
 
-  async onShare(options = { id: null, assetDetail: {}, expireAt: null, shortPass: "" }) {
+  async onShare(options = { id: null, expireAt: null, shortPass: "", hasDay: false }) {
     try {
       // Validate options
       if (typeof options !== "object" || options === null) {
         return onHandleError(StatusCodes.ASSET_OBJ_ERROR, "Invalid options provided.");
       }
 
-      const { id, expireAt, shortPass } = options;
+      const { id, expireAt, shortPass, hasDay } = options;
 
       // Validate id
       if (!id) {
@@ -26,7 +26,7 @@ class ShareLoader {
 
       // Fetch asset group information
       const groupInfoResponse = await this.Http.getData(`/api/v1/storage/get_asset_group_info?${queryParam}`);
-      log(isNumeric ? 123 : 456, groupInfoResponse);
+      //log(isNumeric ? 123 : 456, groupInfoResponse);
 
       // Handle invalid response
       if (!groupInfoResponse || groupInfoResponse.code !== 0 || !groupInfoResponse.data) {
@@ -66,14 +66,15 @@ class ShareLoader {
           AssetType: AssetType,
           expireAt: expireAt,
           shortPass: shortPass,
-          area_ids: AreaIds
+          area_ids: AreaIds,
+          hasDay: hasDay
         };
 
         const data = await this.onCreateShareLink(createShareLinkOptions);
         return data;
       } else {
         // If already shared, update the existing share link
-        const updateShareLinkResponse = await this.onUpdateShareLink(UserID, Cid, expireAt, shortPass);
+        const updateShareLinkResponse = await this.onUpdateShareLink(UserID, Cid, expireAt, shortPass, hasDay);
         return updateShareLinkResponse;
       }
     } catch (error) {
@@ -92,6 +93,7 @@ class ShareLoader {
     expireAt,
     shortPass,
     area_ids,
+    hasDay
   }) {
     try {
       const baseURL = "https://storage.titannet.io";
@@ -112,7 +114,11 @@ class ShareLoader {
         if (expireAtValidationError) {
           return expireAtValidationError; // 返回验证错误
         }
-        currentExpireAt = this.getFutureTimestamp(expireAt);
+        if (hasDay) {
+          currentExpireAt = this.getFutureTimestamp(expireAt); // 确保 expireAt 是时间戳
+        } else {
+          currentExpireAt = expireAt;
+        }
       }
 
       // 构建创建分享链接的URL
@@ -167,7 +173,7 @@ class ShareLoader {
     return Math.floor(futureDate.getTime() / 1000); // 返回时间戳（秒）
   }
 
-  async onUpdateShareLink(UserID, ID, expireAt, shortPass) {
+  async onUpdateShareLink(UserID, ID, expireAt, shortPass, hasDay) {
 
     const shareLinkResponse = await this.Http.getData(`/api/v1/storage/share_link_info?username=${UserID}&cid=${ID}`);
     const { id, short_pass: originalShortPass, expire_at: originalExpireAt, short_link } = shareLinkResponse.data.link;
@@ -190,7 +196,12 @@ class ShareLoader {
       if (expireAtValidator) {
         return expireAtValidator;
       }
-      currentExpireAt = this.getFutureTimestamp(expireAt);  // 确保 expireAt 是时间戳
+
+      if (hasDay) {
+        currentExpireAt = this.getFutureTimestamp(expireAt); // 确保 expireAt 是时间戳
+      } else {
+        currentExpireAt = expireAt;
+      }
     }
     const body = {
       id,
