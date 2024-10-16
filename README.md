@@ -1,11 +1,28 @@
-Here’s the text translated to English:
 
----
 
 ### Titan Storage Web SDK
 The Titan Storage Web SDK provides functionalities for file uploading, downloading, deleting, renaming, sharing, and creating folders.
 
 The Web SDK consists of TitanStorage.
+
+
+###  How to Integrate with Different Frameworks
+We might have a new name, but we’re still delivering the same rock-solid decentralized hot storage you know and love. TitanStorage is all about spicing up your storage game, with the same reliability and innovation that got us here.
+
+TypeScript Environment
+In a TypeScript environment, you need to import both TitanStorage.js and TitanStorage.d.ts from the dist/esm directory. You can do this by including:
+
+import TitanStorage from './dist/esm/TitanStorage.js';					
+JavaScript Environment
+In a JavaScript environment, you should import TitanStorage.js from the dist/umd directory like this:
+
+import TitanStorage from './dist/umd/TitanStorage.js';
+
+const result = TitanStorage.initialize({
+            token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjg1NDk3MDUsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyODQ2MzMwNSwicm9sZSI6MH0.qBw3BBHSC3piHmiwGawOMD14xkBZ9SnueeqAUfL5uX4',
+            url: null,
+            debug: false
+        });
 
 #### TitanStorage Object
 | Method                            | Description                                    |
@@ -53,7 +70,6 @@ Below are the potential errors that the SDK may throw. Please refer to the table
 | 10024     | Report  Exception                 | Check console logs for details.                      |
 | 10025     | ASSET Type Not Found              | Check console logs for details.                      |
 | 10026     | Share  Exception                    | Check console logs for details.                      |
-| 99999      | Unknown Error                    |                                                       |
 
 --- 
 
