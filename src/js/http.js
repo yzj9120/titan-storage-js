@@ -120,11 +120,13 @@ export class Http {
       if (!this.token || this.token.trim() === "") {
         return onHandleError(StatusCodes.API_KEY_EMPTY, "");
       }
+      const size = 0;
       xhr.open("POST", requestUrl, true);
       xhr.setRequestHeader("JwtAuthorization", "Bearer " + this.token);
       xhr.setRequestHeader("Authorization", "Bearer " + uptoken);
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable && onProgress) {
+          size = event.total;
           const percentComplete = (event.loaded / event.total) * 100;
           onProgress(event.loaded, event.total, percentComplete);
         }
@@ -133,6 +135,10 @@ export class Http {
         if (xhr.status >= 200 && xhr.status < 300) {
           const responseData = JSON.parse(xhr.responseText);
           log("File uploaded successfully:", responseData);
+          if (onProgress) {
+            onProgress(size, size, 100);
+          }
+
           resolve(responseData);
         } else {
           log("File uploaded:", xhr.status);
