@@ -18,7 +18,9 @@ class UploadLoader {
   async getUploadAddresses() {
     try {
       const response = await this.Http.getData(
-        "/api/v1/storage/get_upload_info?t=" + new Date().getTime() + "&need_trace=true"
+        "/api/v1/storage/get_upload_info?t=" +
+          new Date().getTime() +
+          "&need_trace=true"
       );
 
       return response.data;
@@ -30,16 +32,16 @@ class UploadLoader {
   async getTempFileUploadAddresses() {
     try {
       const response = await this.Http.getData(
-        "/api/v1/storage/temp_file/get_upload_file?t=" + new Date().getTime() + "&need_trace=true"
+        "/api/v1/storage/temp_file/get_upload_file?t=" +
+          new Date().getTime() +
+          "&need_trace=true"
       );
 
       return response.data;
     } catch (error) {
       return onHandleData({ code: StatusCodes.FAILURE, msg: error });
-
     }
   }
-
 
   //// 登陆上传（文件夹）：获取上传地址
 
@@ -53,7 +55,6 @@ class UploadLoader {
       return response;
     } catch (error) {
       return onHandleData({ code: StatusCodes.FAILURE, msg: error });
-
     }
   }
   //// 外部上传（文件夹）：获取上传地址
@@ -66,13 +67,10 @@ class UploadLoader {
 
       return response;
     } catch (error) {
-      log(333, error)
+      log(333, error);
       return onHandleData({ code: StatusCodes.FAILURE, msg: error });
-
     }
   }
-
-
 
   async uploadBlobToAddresses(options, blob, uploadAddresses, onProgress) {
     const progressMap = new Map();
@@ -171,30 +169,40 @@ class UploadLoader {
         signal
       );
       if (response.code !== 0) {
-
-        return onHandleData({ code: response.code, msg: "Failed to upload file: " + response.msg });
+        return onHandleData({
+          code: response.code,
+          msg: "Failed to upload file: " + response.msg,
+        });
       }
       return response;
     } catch (error) {
-      return onHandleData({ code: StatusCodes.FAILURE, msg: "Failed to upload file: " + error });
+      return onHandleData({
+        code: StatusCodes.FAILURE,
+        msg: "Failed to upload file: " + error,
+      });
     }
   }
 
   /// 文件中（文件+ 文件夹）上传
   async onFileUpload(
     file,
-    options = { areaId: [], groupId: 0, assetType: 0, extraId: "", retryCount: 2 },
+    options = {
+      areaId: [],
+      groupId: 0,
+      assetType: 0,
+      extraId: "",
+      retryCount: 2,
+    },
     onProgress,
     onStreamStatus
   ) {
     try {
-
       const {
         areaId = [],
         groupId = 0,
         assetType = 0,
         extraId = "",
-        retryCount = 2
+        retryCount = 2,
       } = options;
 
       //  const areaId= options.areaId??[]
@@ -202,7 +210,6 @@ class UploadLoader {
       //  const assetType= options.assetType??0
       //  const extraId= options.extraId??""
       //  const retryCount= options.retryCount??2
-
 
       // 验证 areaId、groupId 和 assetType
       const validateAreaId = Validator.validateAreaId(areaId);
@@ -215,14 +222,20 @@ class UploadLoader {
       if (validateAssetType) return validateAssetType;
 
       if (groupId == -1) {
-
         const validateAssetFile = Validator.validateAssetFile(file.size);
         if (validateAssetFile) return validateAssetFile;
       }
 
       if (assetType === 0) {
         // 文件上传流程
-        return await this.handleFileUpload(file, areaId, groupId, extraId, retryCount, onProgress);
+        return await this.handleFileUpload(
+          file,
+          areaId,
+          groupId,
+          extraId,
+          retryCount,
+          onProgress
+        );
       } else {
         // 文件夹上传流程
         return await this.handleFolderUpload(
@@ -237,14 +250,20 @@ class UploadLoader {
       }
     } catch (error) {
       return onHandleData({
-        code: StatusCodes.FAILURE, msg: "Failed to upload file: " + JSON
-          .stringify(error)
+        code: StatusCodes.FAILURE,
+        msg: "Failed to upload file: " + JSON.stringify(error),
       });
     }
   }
   // 文件上传流程
-  async handleFileUpload(file, areaId, groupId, extraId, retryCount = 2, onProgress) {
-
+  async handleFileUpload(
+    file,
+    areaId,
+    groupId,
+    extraId,
+    retryCount = 2,
+    onProgress
+  ) {
     var obj;
     if (groupId == -1) {
       ///外部上传
@@ -316,11 +335,22 @@ class UploadLoader {
                 node_id: address.NodeID,
                 extra_id: extraId,
               });
-              log(11111,res)
+              log(11111, res);
               if (res.err == 1017) {
-                return onHandleData({ code: 0, data: { cid: uploadResult.cid, isAlreadyExist: true, url: res.data.assetDirectUrl } });
+                return onHandleData({
+                  code: 0,
+                  data: {
+                    cid: uploadResult.cid,
+                    isAlreadyExist: true,
+                    url: res.data.assetDirectUrl,
+                  },
+                });
               }
-              return onHandleData({ code: 0, msg: "Upload success", data: { cid: uploadResult.cid } });
+              return onHandleData({
+                code: 0,
+                msg: "Upload success",
+                data: { cid: uploadResult.cid },
+              });
             } else {
               ///外部上传 没有登录的情况
               await this.tempFileUpload({
@@ -333,11 +363,19 @@ class UploadLoader {
                 node_id: address.NodeID,
                 extra_id: extraId,
               });
-              return onHandleData({ code: 0, msg: "Upload success", data: { cid: uploadResult.cid } });
+              return onHandleData({
+                code: 0,
+                msg: "Upload success",
+                data: { cid: uploadResult.cid },
+              });
             }
           }
         } else {
-          return onHandleData({ code: uploadResult.code, msg: uploadResult.msg, data: { cid: uploadResult.cid } });
+          return onHandleData({
+            code: uploadResult.code,
+            msg: uploadResult.msg,
+            data: { cid: uploadResult.cid },
+          });
         }
       } catch (error) {
         // 处理失败和重试逻辑
@@ -377,7 +415,10 @@ class UploadLoader {
     } catch {
       // 所有上传失败时返回失败结果
       this.report.creatReportData(uploadResults, "upload");
-      return onHandleData({ code: StatusCodes.UPLOAD_FILE_ERROR, msg: "All upload addresses failed." });
+      return onHandleData({
+        code: StatusCodes.UPLOAD_FILE_ERROR,
+        msg: "All upload addresses failed.",
+      });
     }
   }
   // 文件夹上传流程
@@ -431,7 +472,7 @@ class UploadLoader {
                   group_id: groupId,
                   asset_cid: rootCID.toString(),
                   extra_id: extraId,
-                  need_trace: true
+                  need_trace: true,
                 };
 
                 if (groupId != -1) {
@@ -448,9 +489,24 @@ class UploadLoader {
                       onWritableStream
                     );
                   } else if (assetResponse.err == 1017) {
-                    resolve(onHandleData({ code: 0, msg: "Upload success", data: { cid: rootCID.toString(),isAlreadyExist: true, url: res.data.assetDirectUrl } }));
+                    resolve(
+                      onHandleData({
+                        code: 0,
+                        msg: "Upload success",
+                        data: {
+                          cid: rootCID.toString(),
+                          isAlreadyExist: true,
+                          url: res.data.assetDirectUrl,
+                        },
+                      })
+                    );
                   } else {
-                    resolve(onHandleData({ code: assetResponse.code, msg: assetResponse.msg ?? "" }));
+                    resolve(
+                      onHandleData({
+                        code: assetResponse.code,
+                        msg: assetResponse.msg ?? "",
+                      })
+                    );
                   }
                 } else {
                   const assetResponse = await this.tempFileUpload(options);
@@ -467,7 +523,12 @@ class UploadLoader {
                       onWritableStream
                     );
                   } else {
-                    resolve(onHandleData({ code: assetResponse.code, msg: assetResponse.msg }));
+                    resolve(
+                      onHandleData({
+                        code: assetResponse.code,
+                        msg: assetResponse.msg,
+                      })
+                    );
                   }
                 }
               } catch (error) {
@@ -476,12 +537,19 @@ class UploadLoader {
             },
             abort(error) {
               if (onWritableStream) onWritableStream("abort");
-              reject(onHandleData({ code: StatusCodes.UPLOAD_FILE_ERROR, msg: error }));
+              reject(
+                onHandleData({
+                  code: StatusCodes.UPLOAD_FILE_ERROR,
+                  msg: error,
+                })
+              );
             },
           })
         )
         .catch((error) => {
-          reject(onHandleData({ code: StatusCodes.UPLOAD_FILE_ERROR, msg: error }));
+          reject(
+            onHandleData({ code: StatusCodes.UPLOAD_FILE_ERROR, msg: error })
+          );
         });
     });
 
@@ -506,7 +574,13 @@ class UploadLoader {
         onProgress
       );
       if (uploadResult.code === 0) {
-        resolve(onHandleData({ code: 0, msg: uploadResult.msg, data: { cid: uploadResult.cid } }));
+        resolve(
+          onHandleData({
+            code: 0,
+            msg: uploadResult.msg,
+            data: { cid: uploadResult.cid },
+          })
+        );
       } else {
         if (retryCount > 0) {
           await this.uploadToAddresses(
@@ -520,7 +594,12 @@ class UploadLoader {
             onWritableStream
           );
         } else {
-          reject(onHandleData({ code: -1, msg: "File upload failed after multiple attempts" }));
+          reject(
+            onHandleData({
+              code: -1,
+              msg: "File upload failed after multiple attempts",
+            })
+          );
         }
       }
     } catch (error) {
