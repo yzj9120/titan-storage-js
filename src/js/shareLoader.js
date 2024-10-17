@@ -1,4 +1,4 @@
-import { log, onHandleError } from "./errorHandler";
+import { log, onHandleData } from "./errorHandler";
 import StatusCodes from "./codes";
 import { Validator } from "./validators";
 class ShareLoader {
@@ -10,14 +10,15 @@ class ShareLoader {
     try {
       // Validate options
       if (typeof options !== "object" || options === null) {
-        return onHandleError(StatusCodes.ASSET_OBJ_ERROR, "Invalid options provided.");
+        return onHandleData({ code: StatusCodes.ASSET_OBJ_ERROR });
       }
 
-      const { id, expireAt, shortPass, hasDay, hasDomain } = options;
+      const { id, expireAt, shortPass, hasDay, hasDomain = true} = options;
+
 
       // Validate id
       if (!id) {
-        return onHandleError(StatusCodes.ID_KEY_EMPTY, "ID must not be null or empty.");
+        return onHandleData({ code: StatusCodes.ID_KEY_EMPTY });
       }
 
       // Determine whether id is numeric (groupid) or CID
@@ -30,7 +31,8 @@ class ShareLoader {
 
       // Handle invalid response
       if (!groupInfoResponse || groupInfoResponse.code !== 0 || !groupInfoResponse.data) {
-        return onHandleError(StatusCodes.REQUEST_ERROR, "Failed to retrieve asset group information.");
+        return onHandleData({ code: StatusCodes.REQUEST_ERROR });
+
       }
 
       // Extract necessary data based on the id type 
@@ -39,7 +41,7 @@ class ShareLoader {
       if (isNumeric) {
         const group = groupInfoResponse.data.data.Group;
         if (!group) {
-          return onHandleError(StatusCodes.REQUEST_ERROR, "Group data is missing.");
+          return onHandleData({ code: StatusCodes.REQUEST_ERROR });
         }
         ShareStatus = group.ShareStatus;
         UserID = group.UserID;
@@ -48,7 +50,7 @@ class ShareLoader {
       } else {
         const assetOverview = groupInfoResponse.data.data.AssetOverview;
         if (!assetOverview || !assetOverview.UserAssetDetail || !assetOverview.AssetRecord) {
-          return onHandleError(StatusCodes.REQUEST_ERROR, "AssetOverview data is incomplete.");
+          return onHandleData({ code: StatusCodes.REQUEST_ERROR, msg: "AssetOverview data is incomplete." });
         }
         ShareStatus = assetOverview.UserAssetDetail.ShareStatus;
         UserID = assetOverview.UserAssetDetail.UserID;
@@ -80,7 +82,7 @@ class ShareLoader {
       }
     } catch (error) {
       // Handle unexpected errors
-      return onHandleError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+      return onHandleData({ code: StatusCodes.FAILURE, msg: error });
     }
   }
 
@@ -161,14 +163,14 @@ class ShareLoader {
           createLinkResponse.data.url = encodeURI(createLinkResponse.data.url);
         }
         // 更新 URL 并返回结果
-        return createLinkResponse;
+        return onHandleData({ code: createLinkResponse.code, msg: createLinkResponse.msg, data: createLinkResponse.data });
       } else {
         // 返回错误信息
-        return createLinkResponse;
+        return onHandleData({ code: createLinkResponse.code, msg: createLinkResponse.msg, data: createLinkResponse.data });
       }
     } catch (error) {
       // 捕获并处理请求错误
-      return onHandleError(StatusCodes.REQUEST_ERROR, error.message);
+      return onHandleData({ code: StatusCodes.FAILURE, msg: error });
     }
   }
 
@@ -217,15 +219,13 @@ class ShareLoader {
     };
     var res = await this.Http.postData("/api/v1/storage/share_link_update", body);
     if (res.code == 0) {
-
       if (hasDomain) {
         res.data.url = "https://storage.titannet.io" + encodeURI(short_link);
       } else {
         res.data.url = encodeURI(short_link);
       }
     }
-    return res
-
+    return onHandleData({ code: res.code, msg: res.msg, data: res.data });
   }
 }
 

@@ -87,9 +87,7 @@ async function uploadAsset() {
 										the system will upload the file to specified regions. If empty, the system will
 										automatically distribute the file globally based on rules. The system calculates
 										the region based on the user's IP for downloading.</li>
-									<li><strong>groupId</strong>: <code>Number</code> - Node ID, defaults to the root
-										node (0). If uploading to the root node, the group ID must be obtained from the
-										Group ID.</li>
+									<li><strong>groupId</strong>: <code>Number</code> - Node ID, Defaults to groupId=0, which refers to the root node. If you need to upload to other nodes, the ID must be obtained from the group, such as Group.ID. If groupId=-1, it indicates an external upload, where the maximum allowed file size is 100MB.</li>
 									<li><strong>assetType</strong>: <code>Number</code> - File type, defaults to 0 for
 										files and 1 for folders.</li>
 

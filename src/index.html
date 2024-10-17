@@ -137,7 +137,7 @@
 		try {
 			// Initialize TitanSDK
 			TitanStorage.initialize({
-				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjkxMzMyMDAsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyOTA0NjgwMCwicm9sZSI6MH0.0QqIn_dRxT_DLfanjeEfoI7PzX2opGbD2ouYDXLSozs', // Replace with actual app key
+				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjkyMjE4OTgsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyOTEzNTQ5OCwicm9sZSI6MH0._msJhmopJYd30oOvTFECaJWgFSiuWN2DN_2kY7HuUTA', // Replace with actual app key
 				debug: true
 			});
 
@@ -233,10 +233,6 @@
 		});
 
 
-
-
-
-
 		document.getElementById('createSharedLink').addEventListener('click', async () => {
 			//createSharedLink
 			var sdk = TitanStorage.getInstance();
@@ -250,7 +246,8 @@
 					id: id,
 					expireAt: 1892520661,
 					shortPass: "qq0000",
-					hasDay: false ///是否支持使用天
+					hasDay: false,///是否支持使用天
+					hasDomain: false
 				}).then(res => {
 					console.log('createSharedLink:', res);
 				});
@@ -321,8 +318,10 @@
 			const options = {
 				areaId: ["beijin", "taibei"],
 				userId: "titan1jh4ntfwyl9xqk9ehg2q7s44w99af939jcgrd2d",
-				assetCid: "bafybeia5dwl3ueandx45ucb2276pmwmllhmwhyehugzxv2zypzfhtvcwcm",
+				assetCid: "bafkreicqv3ddqvisvospztujqv2lij7mzuyiiqkruufie3tmihli7h57pm",
 				assetType: "folder", //file,folder 
+				hasTempFile: true,
+				tempFileName: "window_manager"
 			}
 			TitanStorage.getInstance().downloadAsset(options, (progress) => {
 				console.log(`下载进度: ${progress}%`);
@@ -337,14 +336,10 @@
 
 		});
 
-
-
 		// 文件上传
 		document.getElementById('uploadFileButton').addEventListener('click', async () => {
-
 			const fileInput = document.getElementById('fileInput');
 			const file = fileInput.files[0];
-
 			if (file) {
 				const sdk = TitanStorage.getInstance();
 				// const assetData = { areaId: [], groupId: 0, assetType: 0, extraId: "52145655" };

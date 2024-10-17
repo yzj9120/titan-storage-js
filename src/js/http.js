@@ -1,5 +1,5 @@
 import StatusCodes from "./codes";
-import { log, onHandleError } from "./errorHandler";
+import { log, onHandleData } from "./errorHandler";
 
 export class Http {
   constructor(token, url, debug = false) {
@@ -21,14 +21,9 @@ export class Http {
   updateToken(newToken) {
     if (newToken && newToken.trim() !== "") {
       this.token = newToken;
-      return {
-        code: 0,
-        msg: "PI token updated successfully",
-        data: {}
-      }
+      return onHandleData({ code: StatusCodes.SUCCESSFULLY });
     } else {
-      return onHandleError(StatusCodes.API_KEY_EMPTY,
-        "Failed to update API key. New API token is empty.");
+      return onHandleData({ code: StatusCodes.FAILURE });
     }
   }
 
@@ -36,7 +31,7 @@ export class Http {
     const requestUrl = `${this.url}${endpoint}`;
 
     if (!this.token || this.token.trim() === "") {
-      return onHandleError(StatusCodes.API_KEY_EMPTY, "");
+      return onHandleData({ code: StatusCodes.API_KEY_EMPTY });
     }
     log("Fetching data from URL:", requestUrl);
 
@@ -49,25 +44,28 @@ export class Http {
     })
       .then((response) => {
         if (response.ok) {
+
           return response.json();
         } else {
           return response.text().then((errorText) => {
-            onHandleError(response.status, errorText);
+            return onHandleData({ code: response.status, msg: errorText ?? "" });
           });
         }
       })
-      .then((data) => {
-        log("fetched successfully:", data);
-        return data;
+      .then((res) => {
+        log("fetched successfully:", res);
+
+        return onHandleData({ code: res.code, msg: res.msg ?? "", data: res.data });
+        // return data;
       })
       .catch((error) => {
-        return onHandleError(StatusCodes.FETCH_ERROR, error.message);
+        return onHandleData({ code: StatusCodes.FETCH_ERROR, msg: error });
       });
   }
   postData(endpoint, body) {
     const requestUrl = `${this.url}${endpoint}`;
     if (!this.token || this.token.trim() === "") {
-      return onHandleError(StatusCodes.API_KEY_EMPTY, "");
+      return onHandleData({ code: StatusCodes.API_KEY_EMPTY });
     }
     log("Posting data to URL:", requestUrl);
     return fetch(requestUrl, {
@@ -86,18 +84,21 @@ export class Http {
           return response.text().then((errorText) => {
             // 处理特定的 HTTP 错误
             const errorMessage = `Error ${response.status}: ${errorText}`;
-            return Promise.reject(onHandleError(response.status, errorMessage));
+            var res = onHandleData({ code: response.status, msg: errorMessage });
+            return Promise.reject(res);
           });
         }
       })
-      .then((data) => {
-        log("Data posted successfully:", data);
-        return data;
+      .then((res) => {
+        log("Data posted successfully:", res);
+
+        return onHandleData({ code: res.code, msg: res.msg ?? "", data: res.data });
+        // return data;
       })
       .catch((error) => {
         log("Data posted error:", error);
         // 捕获网络错误和 Promise.reject 中的错误
-        return onHandleError(StatusCodes.FETCH_ERROR, error.message);
+        return onHandleData({ code: StatusCodes.FETCH_ERROR, msg: error });
       });
   }
 
@@ -118,9 +119,9 @@ export class Http {
       const xhr = new XMLHttpRequest();
       const requestUrl = `${endpoint}`;
       if (!this.token || this.token.trim() === "") {
-        return onHandleError(StatusCodes.API_KEY_EMPTY, "");
+        return onHandleData({ code: StatusCodes.API_KEY_EMPTY });
       }
-      const size = 0;
+      var size = 0;
       xhr.open("POST", requestUrl, true);
       xhr.setRequestHeader("JwtAuthorization", "Bearer " + this.token);
       xhr.setRequestHeader("Authorization", "Bearer " + uptoken);
@@ -138,18 +139,17 @@ export class Http {
           if (onProgress) {
             onProgress(size, size, 100);
           }
-
           resolve(responseData);
         } else {
           log("File uploaded:", xhr.status);
-          reject(onHandleError(xhr.status, xhr.responseText));
+          reject(onHandleData({ code: xhr.status, msg: xhr.responseText }));
         }
       };
       // Handle errors
       xhr.onerror = () => {
         const errorMessage = `File upload failed: ${xhr.statusText || "Handle network errors"}`;
         reject(
-          onHandleError(StatusCodes.FETCH_ERROR, errorMessage)
+          onHandleData(StatusCodes.FETCH_ERROR, errorMessage)
         );
       };
 

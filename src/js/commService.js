@@ -1,5 +1,5 @@
 import { Http } from "./http";
-import { log, onHandleError } from "./errorHandler";
+import { log, onHandleData } from "./errorHandler";
 import StatusCodes from "./codes";
 import { Validator } from "./validators";
 
@@ -19,13 +19,8 @@ class CommService {
   updateToken(newToken) {
     if (typeof newToken === "string" && newToken.trim().length > 0) {
       this.Http.updateToken(newToken);
-      log("API token updated successfully.");
     } else {
-      log("Invalid API token.");
-      return onHandleError(
-        StatusCodes.BAD_REQUEST,
-        "Invalid API token provided."
-      );
+      return onHandleData({ code: StatusCodes.BAD_REQUEST, msg: "Invalid API token provided." });
     }
   }
 
@@ -37,10 +32,7 @@ class CommService {
     try {
       return await this.Http.getData("/api/v1/storage/get_area_id");
     } catch (error) {
-      return onHandleError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to get area ID: " + error.message
-      );
+      return onHandleData({ code: StatusCodes.INTERNAL_SERVER_ERROR, msg: "Failed to get area ID: " + error });
     }
   }
 
@@ -69,10 +61,7 @@ class CommService {
         )}&parent=${parent}`
       );
     } catch (error) {
-      return onHandleError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to create group: " + error.message
-      );
+      return onHandleData({ code: StatusCodes.INTERNAL_SERVER_ERROR, msg: "Failed to create group: " + error });
     }
   }
 
@@ -106,10 +95,7 @@ class CommService {
         `/api/v1/storage/get_asset_group_list?page=${page}&parent=${parent}&page_size=${pageSize}`
       );
     } catch (error) {
-      return onHandleError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to get asset group list: " + error.message
-      );
+      return onHandleData({ code: StatusCodes.INTERNAL_SERVER_ERROR, msg: "Failed to asset list: " + error });
     }
   }
 
@@ -143,10 +129,7 @@ class CommService {
       log("TitanSDK:renameGroup:", data);
       return data;
     } catch (error) {
-      return onHandleError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to rename group: " + error.message
-      );
+      return onHandleData({ code: StatusCodes.INTERNAL_SERVER_ERROR, msg: "Failed to rename group: " + error });
     }
   }
 
@@ -181,10 +164,7 @@ class CommService {
       log("TitanSDK:renameAsset:", data);
       return data;
     } catch (error) {
-      return onHandleError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to rename asset: " + error.message
-      );
+      return onHandleData({ code: StatusCodes.INTERNAL_SERVER_ERROR, msg: "Failed to rename asset: " + error });
     }
   }
 
@@ -205,10 +185,7 @@ class CommService {
       log("TitanSDK:deleteGroup:", data);
       return data;
     } catch (error) {
-      return onHandleError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to delete group: " + error.message
-      );
+      return onHandleData({ code: StatusCodes.INTERNAL_SERVER_ERROR, msg: "Failed to delete group: " + error });
     }
   }
 
@@ -217,7 +194,7 @@ class CommService {
 
 
       if (options.cId === -1 && options.groupId === -1) {
-        return onHandleError(StatusCodes.ID_KEY_EMPTY, "At least one ID (cId or groupId) is required.");
+        return onHandleData({ code: StatusCodes.ID_KEY_EMPTY, msg: "At least one ID (cId or groupId) is required" });
       }
 
 
@@ -235,10 +212,7 @@ class CommService {
         return data;
       }
     } catch (error) {
-      return onHandleError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to getAssetGroupInfo : " + error.message
-      );
+      return onHandleData({ code: StatusCodes.INTERNAL_SERVER_ERROR, msg: "" + error });
     }
   }
 
@@ -252,7 +226,7 @@ class CommService {
   async deleteAsset(options = { assetId: -1, areaId: [] }) {
     try {
       if (options.assetId === -1) {
-        return onHandleError(StatusCodes.ID_KEY_EMPTY, "Asset ID is required.");
+        return onHandleData({ code: StatusCodes.ID_KEY_EMPTY, msg: "Asset ID is required" });
       }
       let url = `/api/v1/storage/delete_asset?asset_cid=${options.assetId}`;
       if (options.areaId && options.areaId.length > 0) {
@@ -266,10 +240,9 @@ class CommService {
       log("TitanSDK:deleteAsset:", data);
       return data;
     } catch (error) {
-      return onHandleError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to delete asset: " + error.message
-      );
+
+      return onHandleData({ code: StatusCodes.INTERNAL_SERVER_ERROR, msg: "Failed to delete asset: " + error });
+
     }
   }
 
@@ -302,10 +275,7 @@ class CommService {
       log("TitanSDK:userInfo:", data);
       return data;
     } catch (error) {
-      return onHandleError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to retrieve user information: " + error.message
-      );
+      return onHandleData({ code: StatusCodes.INTERNAL_SERVER_ERROR, msg: "Failed to retrieve user information: " + error });
     }
   }
   async onShare(
@@ -321,7 +291,7 @@ class CommService {
       const shareLoader = new ShareLoader(this.Http); // 实例化 ShareLoader
       return shareLoader.onShare(options); // 调用 ShareLoader 中的 onShare 方法
     } catch (error) {
-      return onHandleError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+      return onHandleData({ code: StatusCodes.INTERNAL_SERVER_ERROR, msg: "" + error });
     }
   }
 
@@ -335,17 +305,11 @@ class CommService {
         "/api/v1/storage/get_upload_info?t=" + new Date().getTime()
       );
       if (response.code !== 0) {
-        return onHandleError(
-          response.code,
-          "Failed to get upload addresses: " + response
-        );
+        return onHandleData({ code: response.code, msg: "Failed to get upload addresses: " + response });
       }
       return response.data.List;
     } catch (error) {
-      return onHandleError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to get upload addresses: " + error.message
-      );
+      return onHandleData({ code: StatusCodes.INTERNAL_SERVER_ERROR, msg: "Failed to get upload addresses: " + error });
     }
   }
   /**
@@ -370,26 +334,22 @@ class CommService {
         assetData
       );
       if (response.code !== 0) {
-        return onHandleError(response.code, "Failed to create asset.");
+        return onHandleData({ code: response.code, msg: "Failed to create asset " });
       }
       return response;
     } catch (error) {
-      return onHandleError(
-        StatusCodes.INTERNAL_SERVER_ERROR,
-        "Failed to create asset: " + error.message
-      );
+      return onHandleData({ code: StatusCodes.INTERNAL_SERVER_ERROR, msg: "Failed to create asset: " + error })
     }
   }
 
   /**
    * 处理文件上传逻辑
    * @param {File} file - 要上传的文
-   * @param {Object} assetData  必填: { extraId:"" 外部ID(集成通知使用，非必填):  areaId: []：区域标识(未空时：系统根据规则自动分发文件至全球区域。下载文件时，系统根据用户IP计算区域，并分配离用户最近的节点进行下载，不为空时：上传待指定的区域，可通过onAreaId获取list数组：如"area_id": [
-        "SouthKorea",
-        "Japan"
-    ],), 
-    groupId: 0：节点ID：默认为根节点，如果需要上传到根节点需要获取Group下的ID，如Group.ID };
-    assetType: 文件类型：默认0 ：文件，1:文件夹
+   * @param {*} options.areaId  区域标识，非必填；默认为空。 当为空时系统根据规则自动分发文件至全球区域，不为空时：上传待指定的区域
+   * @param {*} options.groupId 节点ID：非必填，默认0。表示上传到根节点。如果需要上传到其他节点需要获取Group下的ID，如Group.ID ; 如果为-1 ：则表示在外部上传，准许上传文件最大100M
+   *  @param {*} options.assetType  文件类型：非必填：默认 0 。0:文件，1:文件夹
+   *  @param {*} options.extraId 外部通知ID：非必填，
+   *  @param {*} options.retryCount 重试次数 ：非必填。默认上传失败重试2次
    * @returns {Promise<Object>} 上传结果
    */
 
@@ -420,32 +380,39 @@ class CommService {
       assetCid: "",
       assetType: "",
       userId: "",
+      hasTempFile: false,
+      tempFileName: ""
     }, onProgress) {
 
-    const { assetCid, assetType, userId,areaId } = options;
+    const { assetCid, assetType, userId, areaId, hasTempFile, tempFileName } = options;
 
     const validateAssetCid = Validator.validateAssetCid(assetCid);
     if (validateAssetCid) return validateAssetCid;
     let url = `/api/v1/storage/share_asset?asset_cid=` + assetCid;
     if (userId) {
       url = "/api/v1/storage/open_asset?user_id=" + userId + "&asset_cid=" + assetCid
-
       if (areaId && areaId.length > 0) {
         const areaIdParams = areaId.map(id => `area_id=${encodeURIComponent(id)}`).join("&");
         url += `&${areaIdParams}`;
       }
     }
+    if (hasTempFile) {
+      url = "/api/v1/storage/temp_file/download/" + assetCid
+    }
+
     const res = await this.Http.getData(url);
 
     if (res.code === 0) {
       const urls = res.data.url;
-
       function getFileNameFromUrl(url) {
         const urlObj = new URL(url);
         const params = new URLSearchParams(urlObj.search);
         return params.get("filename"); // 获取 'filename' 参数的值
       }
-      const fileName = getFileNameFromUrl(urls[0]);
+      var fileName = getFileNameFromUrl(urls[0]);
+      if (!fileName) {
+        fileName = tempFileName;
+      }
       const filesize = res.data.size;
       const traceId = res.data.trace_id;
 
@@ -481,7 +448,7 @@ class CommService {
         log("downresult.file", downresult);
         return downresult;
       } else {
-        return onHandleError(StatusCodes.Dowload_Type_ERROR, "");
+        return onHandleData({ code: StatusCodes.Dowload_Type_ERROR, msg: "Failed to downresult: " })
       }
     } else {
       return res;

@@ -1,4 +1,4 @@
-import { log, onHandleError } from "./errorHandler";
+import { log, onHandleData } from "./errorHandler";
 import StatusCodes from "./codes";
 
 class Report {
@@ -37,18 +37,18 @@ class Report {
       );
       // 检查响应代码是否为 0
       if (response.code !== 0) {
-        return onHandleError(response.code, "Failed to report.");
+        return onHandleData({ code: response.code, msg: "Failed to report" });
       }
       return response;
     } catch (error) {
-      return onHandleError(
-        StatusCodes.REPORT_ERROR,
-        "Failed to report: " + error.message
-      );
+      return onHandleData({ code: StatusCodes.REPORT_ERROR, msg: "Failed to report: " + error });
     }
   }
   ///数据上报数据创建
   creatReportData(uploadResults, type) {
+
+
+    if (uploadResults.length == 0) return;
     ///数据上报：
     const failedUploads = uploadResults.filter(
       (result) => result.msg != "Failed to upload file: Upload aborted"

@@ -5,6 +5,13 @@ export function handleError(statusCode, errorMessage) {
   let userMessage;
 
   switch (statusCode) {
+
+
+
+    case StatusCodes.InitSdk_OK:
+      userMessage = "Initialize SDK Success";
+      break;
+
     case StatusCodes.BAD_REQUEST:
       userMessage = "The request was invalid. Please check your input.";
       break;
@@ -37,6 +44,15 @@ export function handleError(statusCode, errorMessage) {
     case StatusCodes.ID_KEY_EMPTY:
       userMessage = "ID is required but was not provided.";
       break;
+
+    case StatusCodes.ASSET_OBJ_ERROR:
+      userMessage = "Invalid options provided.";
+      break;
+
+    case StatusCodes.REQUEST_ERROR:
+      userMessage = "Failed to retrieve asset group information.";
+      break;
+
     case StatusCodes.FILE_NAME_KEY_EMPTY:
       userMessage = "Name is required but was not provided.";
       break;
@@ -98,13 +114,20 @@ export function handleError(statusCode, errorMessage) {
       userMessage = "Download type not found";
       break;
 
+    case StatusCodes.SUCCESSFULLY:
+      userMessage = "Success";
+      break;
+    case StatusCodes.FAILURE:
+      userMessage = "Failure";
+      break;
+
     default:
       userMessage = "An unknown error occurred.";
   }
 
   return {
-    statusCode,
-    errorMessage: errorMessage || userMessage,
+    code: statusCode,
+    msg: errorMessage || userMessage,
   };
 }
 
@@ -119,10 +142,22 @@ export function log(message, data = {}, debug = true) {
   }
 }
 
-export function onHandleError(statusCode, errorMessage) {
-  const errorDetails = handleError(statusCode, errorMessage);
+export function onHandleData({
+  code,
+  msg = "",
+  data = {}
+} = {}) {
+  let errorDetails = { code, msg };
+  if (!msg) {
+    errorDetails = handleError(code, msg);
+  }
+
   return {
-    code: errorDetails.statusCode,
-    msg: errorDetails.errorMessage,
+    code: errorDetails.code,
+    msg: errorDetails.msg,
+    data: data || {}
   };
 }
+
+
+

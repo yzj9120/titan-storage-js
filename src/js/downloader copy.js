@@ -1,4 +1,4 @@
-import { onHandleError, log } from "./errorHandler";
+import { onHandleData, log } from "./errorHandler";
 import Report from "./report";
 
 class SimpleLock {
@@ -161,7 +161,7 @@ class Downloader {
                 });
             });
             this.report.creatReportData(uploadResults, "download");
-            onHandleError(error);
+            onHandleData(error);
             return { code: -1, msg: "Download failed: " + error };
         }
     }
