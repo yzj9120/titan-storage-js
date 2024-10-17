@@ -54,9 +54,8 @@ export class Http {
       })
       .then((res) => {
         log("fetched successfully:", res);
-
-        return onHandleData({ code: res.code, msg: res.msg ?? "", data: res.data });
-        // return data;
+        // return onHandleData({ code: res.code, msg: res.msg ?? "", data: res.data });
+        return res;
       })
       .catch((error) => {
         return onHandleData({ code: StatusCodes.FETCH_ERROR, msg: error });
@@ -92,8 +91,8 @@ export class Http {
       .then((res) => {
         log("Data posted successfully:", res);
 
-        return onHandleData({ code: res.code, msg: res.msg ?? "", data: res.data });
-        // return data;
+        // return onHandleData({ code: res.code, msg: res.msg ?? "", data: res.data });
+        return res;
       })
       .catch((error) => {
         log("Data posted error:", error);

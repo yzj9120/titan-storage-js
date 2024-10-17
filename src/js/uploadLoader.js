@@ -63,7 +63,6 @@ class UploadLoader {
         "/api/v1/storage/temp_file/upload",
         assetData
       );
-      log(88888, response)
 
       return response;
     } catch (error) {
@@ -184,24 +183,26 @@ class UploadLoader {
   /// 文件中（文件+ 文件夹）上传
   async onFileUpload(
     file,
-    assetData = {
-      areaId: [],
-      groupId: 0,
-      assetType: 0,
-      extraId: "",
-      retryCount: 2,
-    },
+    options = { areaId: [], groupId: 0, assetType: 0, extraId: "", retryCount: 2 },
     onProgress,
     onStreamStatus
   ) {
     try {
+
       const {
         areaId = [],
         groupId = 0,
         assetType = 0,
         extraId = "",
-        retryCount = 2,
-      } = assetData;
+        retryCount = 2
+      } = options;
+
+      //  const areaId= options.areaId??[]
+      //  const groupId= options.groupId??0
+      //  const assetType= options.assetType??0
+      //  const extraId= options.extraId??""
+      //  const retryCount= options.retryCount??2
+
 
       // 验证 areaId、groupId 和 assetType
       const validateAreaId = Validator.validateAreaId(areaId);
@@ -213,22 +214,15 @@ class UploadLoader {
       const validateAssetType = Validator.validateAssetType(assetType);
       if (validateAssetType) return validateAssetType;
 
-
       if (groupId == -1) {
+
         const validateAssetFile = Validator.validateAssetFile(file.size);
         if (validateAssetFile) return validateAssetFile;
       }
 
       if (assetType === 0) {
         // 文件上传流程
-        return await this.handleFileUpload(
-          file,
-          areaId,
-          groupId,
-          extraId,
-          retryCount,
-          onProgress
-        );
+        return await this.handleFileUpload(file, areaId, groupId, extraId, retryCount, onProgress);
       } else {
         // 文件夹上传流程
         return await this.handleFolderUpload(
@@ -249,14 +243,8 @@ class UploadLoader {
     }
   }
   // 文件上传流程
-  async handleFileUpload(
-    file,
-    areaId,
-    groupId,
-    extraId,
-    retryCount = 2,
-    onProgress
-  ) {
+  async handleFileUpload(file, areaId, groupId, extraId, retryCount = 2, onProgress) {
+
     var obj;
     if (groupId == -1) {
       ///外部上传
@@ -265,6 +253,7 @@ class UploadLoader {
       /// 登陆后上传
       obj = await this.getUploadAddresses();
     }
+
     const uploadAddresses = obj.List;
     const TraceID = obj.TraceID ?? "";
 
@@ -327,12 +316,23 @@ class UploadLoader {
                 node_id: address.NodeID,
                 extra_id: extraId,
               });
+              log(11111,res)
               if (res.err == 1017) {
-                return onHandleData({ code: 0, data: { cid: uploadResult.cid } });
+                return onHandleData({ code: 0, data: { cid: uploadResult.cid, isAlreadyExist: true, url: res.data.assetDirectUrl } });
               }
               return onHandleData({ code: 0, msg: "Upload success", data: { cid: uploadResult.cid } });
             } else {
-              ///外部上传
+              ///外部上传 没有登录的情况
+              await this.tempFileUpload({
+                asset_name: file.name,
+                asset_type: "file",
+                asset_size: file.size,
+                area_id: areaId,
+                group_id: groupId,
+                asset_cid: uploadResult.cid,
+                node_id: address.NodeID,
+                extra_id: extraId,
+              });
               return onHandleData({ code: 0, msg: "Upload success", data: { cid: uploadResult.cid } });
             }
           }
@@ -448,7 +448,7 @@ class UploadLoader {
                       onWritableStream
                     );
                   } else if (assetResponse.err == 1017) {
-                    resolve(onHandleData({ code: 0, msg: "Upload success", data: { cid: rootCID.toString() } }));
+                    resolve(onHandleData({ code: 0, msg: "Upload success", data: { cid: rootCID.toString(),isAlreadyExist: true, url: res.data.assetDirectUrl } }));
                   } else {
                     resolve(onHandleData({ code: assetResponse.code, msg: assetResponse.msg ?? "" }));
                   }

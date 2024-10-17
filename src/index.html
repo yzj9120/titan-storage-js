@@ -316,12 +316,12 @@
 		document.getElementById('downloadAsset').addEventListener('click', async () => {
 			///下载 
 			const options = {
-				areaId: ["beijin", "taibei"],
-				userId: "titan1jh4ntfwyl9xqk9ehg2q7s44w99af939jcgrd2d",
-				assetCid: "bafkreicqv3ddqvisvospztujqv2lij7mzuyiiqkruufie3tmihli7h57pm",
-				assetType: "folder", //file,folder 
+				areaId: [],
+				userId: "",
+				assetCid: "bafkreifblmvcswedqso3vn2rfmijo2upamqu6si77gz7kfb3k7uwo22mvi",
+				assetType: "file", //file,folder 
 				hasTempFile: true,
-				tempFileName: "window_manager"
+				tempFileName: "组 569033@2x.png"
 			}
 			TitanStorage.getInstance().downloadAsset(options, (progress) => {
 				console.log(`下载进度: ${progress}%`);
@@ -342,7 +342,7 @@
 			const file = fileInput.files[0];
 			if (file) {
 				const sdk = TitanStorage.getInstance();
-				// const assetData = { areaId: [], groupId: 0, assetType: 0, extraId: "52145655" };
+				// const assetData = { areaId: ["xx"], groupId: 0, assetType: 0, extraId: "52145655" };
 				const assetData = { groupId: 0, assetType: 0 };
 				var res = await sdk.uploadAsset(file, assetData, (loaded, total, percent) =>
 					console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
