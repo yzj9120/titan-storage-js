@@ -158,12 +158,10 @@ class HttpService {
     return await this.Http.getData("/api/v1/storage/share_status_set" + queryParam);
   }
   //share_link_info 
-
   async shareLinkInfo(queryParam) {
     return await this.Http.getData("/api/v1/storage/share_link_info" + queryParam);
   }
   //share_link_update
-
   async shareLinkUpdate(options) {
     return await this.Http.postData("/api/v1/storage/share_link_update", options);
   }
