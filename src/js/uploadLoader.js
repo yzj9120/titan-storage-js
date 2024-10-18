@@ -14,14 +14,22 @@ class UploadLoader {
     this.Http = Http;
     this.report = new Report(this.Http);
   }
+
+
+
+
+
+
   //// 登陆上传（文件）：获取上传地址
-  async getUploadAddresses() {
+  async getUploadAddresses(area_ids) {
     try {
-      const response = await this.Http.getData(
-        "/api/v1/storage/get_upload_info?t=" +
-          new Date().getTime() +
-          "&need_trace=true"
-      );
+      let url = "/api/v1/storage/get_upload_info?t=" + new Date().getTime() + "&need_trace=true";
+      if (area_ids && area_ids.length > 0) {
+        const areaIdParams = area_ids.map(id => `area_id=${encodeURIComponent(id)}`).join("&");
+        url += `&${areaIdParams}`;
+      }
+
+      const response = await this.Http.getData(url);
 
       return response.data;
     } catch (error) {
@@ -29,13 +37,16 @@ class UploadLoader {
     }
   }
   //// 外部上传：获取上传地址
-  async getTempFileUploadAddresses() {
+  async getTempFileUploadAddresses(area_ids) {
     try {
-      const response = await this.Http.getData(
-        "/api/v1/storage/temp_file/get_upload_file?t=" +
-          new Date().getTime() +
-          "&need_trace=true"
-      );
+      let url = "/api/v1/storage/temp_file/get_upload_file?t=" + new Date().getTime() + "&need_trace=true";
+
+      if (area_ids && area_ids.length > 0) {
+        const areaIdParams = area_ids.map(id => `area_id=${encodeURIComponent(id)}`).join("&");
+        url += `&${areaIdParams}`;
+      }
+      
+      const response = await this.Http.getData(url);
 
       return response.data;
     } catch (error) {
@@ -267,10 +278,10 @@ class UploadLoader {
     var obj;
     if (groupId == -1) {
       ///外部上传
-      obj = await this.getTempFileUploadAddresses();
+      obj = await this.getTempFileUploadAddresses(areaId);
     } else {
       /// 登陆后上传
-      obj = await this.getUploadAddresses();
+      obj = await this.getUploadAddresses(areaId);
     }
 
     const uploadAddresses = obj.List;
@@ -362,6 +373,7 @@ class UploadLoader {
                 asset_cid: uploadResult.cid,
                 node_id: address.NodeID,
                 extra_id: extraId,
+                need_trace: true
               });
               return onHandleData({
                 code: 0,

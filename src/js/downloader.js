@@ -53,6 +53,7 @@ class Downloader {
     }
 
     async downloadChunk(url, start, end, retries = 0) {
+
         try {
             const response = await fetch(url, {
                 headers: {
@@ -76,25 +77,34 @@ class Downloader {
                 throw new Error(`Failed to download chunk: ${start}-${end}, status: ${response.status}`);
             }
         } catch (error) {
+            console.log(111, retries)
             if (retries < this.maxRetries) {
                 log(`Chunk download failed, retrying attempt ${retries + 1} for chunk ${start}-${end}`);
                 await new Promise(resolve => setTimeout(resolve, 1000)); // Retry delay
                 return this.downloadChunk(url, start, end, retries + 1);
             } else {
-                this.failedChunks.push({ start, end }); // Record failed chunk
-                throw new Error(`Chunk download failed after ${this.maxRetries} attempts: ${start}-${end}`);
+                // 达到最大重试次数时，记录失败块，并返回失败信息
+                this.failedChunks.push({ start, end });
+
+                // 返回失败结果，并阻止进一步下载
+                return onHandleData({
+                    code: StatusCodes.FAILURE,
+                    msg: `Chunk download failed after ${this.maxRetries} attempts: ${start}-${end}`
+                });
             }
         }
     }
 
     async downloadFile(urls, traceId, assetCid, fileName, fileSize) {
         const chunkSize = Math.ceil(fileSize / urls.length);
+
+        console.log("chunkSize", fileSize + "----" + chunkSize);
         const uploadResults = [];
         try {
             const startTime = Date.now();
             await this.concurrentDownload(urls, fileSize, chunkSize);
 
-            // Check integrity of each downloaded chunk
+            // 检查所有下载的块（chunk）是否完整
             const allChunksComplete = this.downloadedChunks.every((chunk, index) => {
                 const expectedSize = index < urls.length - 1 ? chunkSize : fileSize % chunkSize;
                 return chunk.blob.size === expectedSize;
@@ -160,8 +170,8 @@ class Downloader {
                 });
             });
             this.report.creatReportData(uploadResults, "download");
-            onHandleData(error);
-            return { code: -1, msg: "Download failed: " + error };
+            return onHandleData({ code: StatusCodes.FAILURE, msg: "Download failed: " + error });
+
         }
     }
 
@@ -225,6 +235,8 @@ class Downloader {
     }
 
     async retryMissingChunks(failedChunks, urls) {
+
+      console.log("失败的快",failedChunks)
         for (let chunk of failedChunks) {
             let success = false;
             for (let url of urls) {
@@ -263,7 +275,9 @@ class Downloader {
                 if (progress > 100) {
                     progress = 100;
                 }
+
                 updateProgress(fileName, progress); // 反馈下载进度
+
             };
 
             xhr.onload = function () {

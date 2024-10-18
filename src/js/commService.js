@@ -1,7 +1,7 @@
-import { Http } from "./http";
 import { log, onHandleData } from "./errorHandler";
 import StatusCodes from "./codes";
 import { Validator } from "./validators";
+import HttpService from "./httpService";
 
 import Downloader from "./downloader";
 import UploadLoader from "./uploadLoader";
@@ -10,6 +10,7 @@ import ShareLoader from "./shareLoader"; // 导入 ShareLoader
 class CommService {
   constructor(Http) {
     this.Http = Http;
+    this.httpService = new HttpService(Http); // 使用 Ht
   }
 
   /**
@@ -33,7 +34,7 @@ class CommService {
    */
   async onAreaId() {
     try {
-      return await this.Http.getData("/api/v1/storage/get_area_id");
+      return await this.httpService.getAreaIdList();
     } catch (error) {
       return onHandleData({
         code: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -61,11 +62,7 @@ class CommService {
         log(validator2);
         return validator;
       }
-      return await this.Http.getData(
-        `/api/v1/storage/create_group?name=${encodeURIComponent(
-          name
-        )}&parent=${parent}`
-      );
+      return await this.httpService.createGroup(name, parent)
     } catch (error) {
       return onHandleData({
         code: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -100,9 +97,7 @@ class CommService {
         return validatePageSize;
       }
 
-      return await this.Http.getData(
-        `/api/v1/storage/get_asset_group_list?page=${page}&parent=${parent}&page_size=${pageSize}`
-      );
+      return await this.httpService.onAssetGroupList(page, parent, pageSize);
     } catch (error) {
       return onHandleData({
         code: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -129,17 +124,7 @@ class CommService {
       const validateGroupId = Validator.validateGroupId(options.groupId);
       if (validateGroupId) return validateGroupId;
 
-      const body = {
-        group_id: options.groupId,
-        new_name: options.name,
-      };
-
-      const data = await this.Http.postData(
-        "/api/v1/storage/rename_group",
-        body
-      );
-      log("TitanSDK:renameGroup:", data);
-      return data;
+      return await this.httpService.renameGroup(options);
     } catch (error) {
       return onHandleData({
         code: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -167,17 +152,8 @@ class CommService {
         return validateAssetCid;
       }
 
-      const body = {
-        asset_cid: options.assetId,
-        new_name: options.name,
-      };
 
-      const data = await this.Http.postData(
-        "/api/v1/storage/rename_group",
-        body
-      );
-      log("TitanSDK:renameAsset:", data);
-      return data;
+      return await this.httpService.renameAsset(options);
     } catch (error) {
       return onHandleData({
         code: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -197,45 +173,11 @@ class CommService {
       const validateGroupId = Validator.validateGroupId(options.groupId);
       if (validateGroupId) return validateGroupId;
 
-      const data = await this.Http.getData(
-        `/api/v1/storage/delete_group?group_id=${options.groupId}`
-      );
-      log("TitanSDK:deleteGroup:", data);
-      return data;
+      return await this.httpService.deleteGroup(options);
     } catch (error) {
       return onHandleData({
         code: StatusCodes.INTERNAL_SERVER_ERROR,
         msg: "Failed to delete group: " + error,
-      });
-    }
-  }
-
-  async getAssetGroupInfo(options = { cId: -1, groupId: -1 }) {
-    try {
-      if (options.cId === -1 && options.groupId === -1) {
-        return onHandleData({
-          code: StatusCodes.ID_KEY_EMPTY,
-          msg: "At least one ID (cId or groupId) is required",
-        });
-      }
-
-      if (options.cId) {
-        const data = await this.Http.getData(
-          `/api/v1/storage/get_asset_group_info?cid=${options.cId}`
-        );
-        log("TitanSDK:getAssetGroupInfo:", data);
-        return data;
-      } else if (options.groupId) {
-        const data = await this.Http.getData(
-          `/api/v1/storage/get_asset_group_info?groupid=${options.groupId}`
-        );
-        log("TitanSDK:getAssetGroupInfo:", data);
-        return data;
-      }
-    } catch (error) {
-      return onHandleData({
-        code: StatusCodes.INTERNAL_SERVER_ERROR,
-        msg: "" + error,
       });
     }
   }
@@ -255,17 +197,7 @@ class CommService {
           msg: "Asset ID is required",
         });
       }
-      let url = `/api/v1/storage/delete_asset?asset_cid=${options.assetId}`;
-      if (options.areaId && options.areaId.length > 0) {
-        const areaIdParams = options.areaId
-          .map((id) => `area_id=${encodeURIComponent(id)}`)
-          .join("&");
-        url += `&${areaIdParams}`;
-      }
-
-      const data = await this.Http.getData(url);
-      log("TitanSDK:deleteAsset:", data);
-      return data;
+      return await this.httpService.deleteAsset(options);
     } catch (error) {
       return onHandleData({
         code: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -273,6 +205,24 @@ class CommService {
       });
     }
   }
+  async getAssetGroupInfo(options = { cId: -1, groupId: -1 }) {
+    try {
+      if (options.cId === -1 && options.groupId === -1) {
+        return onHandleData({
+          code: StatusCodes.ID_KEY_EMPTY,
+          msg: "At least one ID (cId or groupId) is required",
+        });
+      }
+      return await this.httpService.getAssetGroupInfo(options);
+    } catch (error) {
+      return onHandleData({
+        code: StatusCodes.INTERNAL_SERVER_ERROR,
+        msg: "" + error,
+      });
+    }
+  }
+
+  
 
   /**
    * Retrieves user-related information.
@@ -280,28 +230,7 @@ class CommService {
    */
   async userInfo() {
     try {
-      const url1 = `/api/v1/storage/get_storage_size`;
-      const data1 = await this.Http.getData(url1);
-
-      const url2 = `/api/v1/storage/get_vip_info`;
-      const data2 = await this.Http.getData(url2);
-
-      const url3 = `/api/v1/storage/get_asset_count`;
-      const data3 = await this.Http.getData(url3);
-
-      const combinedData = {
-        ...data1.data,
-        ...data2.data,
-        ...data3.data,
-      };
-
-      const data = {
-        code: 0,
-        data: combinedData,
-      };
-
-      log("TitanSDK:userInfo:", data);
-      return data;
+      return await this.httpService.userInfo();
     } catch (error) {
       return onHandleData({
         code: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -319,7 +248,7 @@ class CommService {
     }
   ) {
     try {
-      const shareLoader = new ShareLoader(this.Http); // 实例化 ShareLoader
+      const shareLoader = new ShareLoader(this.httpService); // 实例化 ShareLoader
       return shareLoader.onShare(options); // 调用 ShareLoader 中的 onShare 方法
     } catch (error) {
       return onHandleData({
@@ -428,21 +357,24 @@ class CommService {
       userId: "",
       hasTempFile: false,
       tempFileName: "",
+      fileSize: 0,
     },
     onProgress
   ) {
-    const { assetCid, assetType, userId, areaId, hasTempFile, tempFileName } =
+    const { assetCid, assetType, userId, areaId, hasTempFile, tempFileName, fileSize } =
       options;
 
     const validateAssetCid = Validator.validateAssetCid(assetCid);
     if (validateAssetCid) return validateAssetCid;
-    let url = `/api/v1/storage/share_asset?asset_cid=` + assetCid;
+    /// 登录下载
+    let url = `/api/v1/storage/share_asset?asset_cid=` + assetCid + "&need_trace=true";
     if (userId) {
+      /// 使用uid 标识下载（分享，详情等模块）
       url =
         "/api/v1/storage/open_asset?user_id=" +
         userId +
         "&asset_cid=" +
-        assetCid;
+        assetCid + "&need_trace=true";;
       if (areaId && areaId.length > 0) {
         const areaIdParams = areaId
           .map((id) => `area_id=${encodeURIComponent(id)}`)
@@ -451,7 +383,8 @@ class CommService {
       }
     }
     if (hasTempFile) {
-      url = "/api/v1/storage/temp_file/download/" + assetCid;
+      /// 临时文件下载
+      url = "/api/v1/storage/temp_file/download/" + assetCid + "?need_trace=true";
     }
 
     const res = await this.Http.getData(url);
@@ -467,7 +400,8 @@ class CommService {
       if (!fileName) {
         fileName = tempFileName;
       }
-      const filesize = res.data.size;
+
+      const filesize = res.data.size ?? fileSize;
       const traceId = res.data.trace_id;
 
       // 实例化 Downloader
@@ -491,6 +425,11 @@ class CommService {
             onProgress(progress); // 将进度反馈给调用者
           }
         });
+
+
+        //  const uuu = urls.slice(4)
+
+        //  console.log(111, uuu)
         // 开始下载文件
         var downresult = await downloader.downloadFile(
           urls,

@@ -1,4 +1,5 @@
 import { Http } from "./http";
+
 import StatusCodes from "./codes";
 
 import CommService from "./commService";
@@ -11,7 +12,6 @@ class TitanStorage {
 
   constructor({ token, url, debug = false }) {
     this.commService = new CommService(new Http(token, url, debug));
-    this.debug = debug;
   }
   /**
    * Initialize SDK, ensuring it is only initialized once
@@ -21,34 +21,15 @@ class TitanStorage {
   static initialize(options = { token: "", debug: false, url: "" }) {
     try {
       const status = Validator.validateApiKey(options.token);
-
       if (status) {
         log(status);
         return status;
       }
-
       localStorage.setItem("titanOptions", JSON.stringify(options));
       TitanStorage.instance = new TitanStorage(options);
-      // 返回初始化成功状态
       const successStatus = onHandleData({ code: StatusCodes.SUCCESSFULLY });
       log(successStatus);
       return successStatus;
-
-
-      // if (!TitanStorage.instance) {
-      //   localStorage.setItem("options", JSON.stringify(options));
-      //   TitanStorage.instance = new TitanStorage(options);
-      //   // 返回初始化成功状态
-      //   const successStatus = onHandleError(StatusCodes.Sdk_OK, "");
-      //   log(successStatus);
-      //   return successStatus;
-      // }
-
-      // log("SDK has already been initialized.");
-      // return onHandleError(
-      //   StatusCodes.Sdk_OK,
-      //   "SDK has already been initialized."
-      // );
     } catch (error) {
       return onHandleData({ code: StatusCodes.InitSdk_ERROR }
       );
@@ -225,16 +206,17 @@ class TitanStorage {
   }
 
   /**
-   * 文件/文件夹下载
-  * @param {Object} options - downloadAsset parameters
-   * @param {*} options.assetCid  ：文件cid：必填，
-   * @param {*} options.assetType ：文件类型：必填，file 文件 ；folder 文件夹
-   * @param {*} options.userId ：用户ID。非必填，默认为空。当需要在外部使用userId下载时需要提供
-   * @param {*} options.areaId ：区域ID。非必填，默认为空。自动选择最近的下载节点
-   * @param {*} options.hasTempFile ：非必填，默认false。当需要在外部使用TempFile下载时需要提供
-   * @param {*} options.tempFileName ：非必填，默认为空。当需要在外部使用TempFile下载时需要提供tempFileName
-   * @param {*} onProgress：进度条
-   * @returns
+   * Download an asset
+   * @param {Object} options - Download parameters
+   * @param {string} options.assetCid - Asset CID
+   * @param {string} options.assetType - Asset type (file or folder)
+   * @param {string} [options.userId] - Optional user ID
+   * @param {number[]} [options.areaId] - List of area IDs
+   * @param {boolean} [options.hasTempFile] - Use temporary file (true or false)
+   * @param {string} [options.tempFileName] - Temporary file name
+   * @param {number} [options.fileSize] - File size
+   * @param {Function} onProgress - Progress callback
+   * @returns {Promise<Object>} Download result
    */
   async downloadAsset(options = {
     areaId: [],
@@ -242,7 +224,8 @@ class TitanStorage {
     assetType: "",
     userId: "",
     hasTempFile: false,
-    tempFileName: ""
+    tempFileName: "",
+    fileSize: 0
   }, onProgress) {
     const data = await this.commService.onFileDown(
       options,

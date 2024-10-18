@@ -137,7 +137,7 @@
 		try {
 			// Initialize TitanSDK
 			TitanStorage.initialize({
-				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjkyMjE4OTgsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyOTEzNTQ5OCwicm9sZSI6MH0._msJhmopJYd30oOvTFECaJWgFSiuWN2DN_2kY7HuUTA', // Replace with actual app key
+				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjkzMTUxMTksImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyOTIyODcxOSwicm9sZSI6MH0.00OJHCFXK_08bTmzRUTYDp2VfT6lxf1h4LfJ96s_ujU', // Replace with actual app key
 				debug: true
 			});
 
@@ -246,8 +246,8 @@
 					id: id,
 					expireAt: 1892520661,
 					shortPass: "qq0000",
-					hasDay: false,///是否支持使用天
-					hasDomain: false
+					// hasDay: false,///是否支持使用天
+					// hasDomain: false
 				}).then(res => {
 					console.log('createSharedLink:', res);
 				});
@@ -277,9 +277,9 @@
 			/// createFolder 
 			TitanStorage.getInstance().renameFolder({
 				name: "folder000",
-				groupId: 296
+				groupId: 331
 			}).then(res => {
-				console.log('createFolder:', res);
+				console.log('renameFolder:', res);
 
 			}).catch(error => {
 				console.error('Error creating folder:', error);
@@ -289,9 +289,9 @@
 			/// createFolder 
 			TitanStorage.getInstance().renameAsset({
 				name: "修改名称",
-				assetId: "bafybeiakfko6hakzdqaz5k3eylo6rbw64l7cunjptwa6hwzvkh5rmanwpm"
+				assetId: "bafybeibs2r32o7bt2fz6v7sf4nmbunfaeldpwynum2cq5xzdk76xa6kge4"
 			}).then(res => {
-				console.log('createFolder:', res);
+				console.log('renameAsset:', res);
 
 			}).catch(error => {
 				console.error('Error creating folder:', error);
@@ -301,7 +301,7 @@
 
 		document.getElementById('getltemDetails').addEventListener('click', async () => {
 			///getltemDetails
-			TitanStorage.getInstance().getltemDetails({ groupId: 261 })
+			TitanStorage.getInstance().getltemDetails({ cId: "bafybeih3c63zmeksygxfdys46slcevidy6cikegmuvbnbvyrcqazqaluym" })
 				.then(data => {
 					console.log('getltemDetails:', data);
 				})
@@ -311,17 +311,32 @@
 
 		});
 
+		document.getElementById('getUserProfile').addEventListener('click', async () => {
+			///getltemDetails
+			TitanStorage.getInstance().getUserProfile()
+				.then(data => {
+					console.log('getUserProfile:', data);
+				})
+				.catch(error => {
+					console.error('getUserProfile:', error);
+				});
+
+		});
+
+		
+
 
 
 		document.getElementById('downloadAsset').addEventListener('click', async () => {
-			///下载 
+			///下载 https://api-test1.container1.titannet.io/api/v1/storage/temp_file/share/bafkreianachejwgaf4fap7vnp3bsf62rnzkdnc3pgkwye7xwpxfuuavhbq
 			const options = {
-				areaId: [],
+				areaId: ["beijing","shanghai"],
 				userId: "",
-				assetCid: "bafkreifblmvcswedqso3vn2rfmijo2upamqu6si77gz7kfb3k7uwo22mvi",
+				assetCid: "bafkreiefqzkdgno7by2p4q7xw2qbzwuixgndxrhlgcuxgo64dapnlindwe",
 				assetType: "file", //file,folder 
-				hasTempFile: true,
-				tempFileName: "组 569033@2x.png"
+				// hasTempFile: true,
+				// tempFileName: "组 569033@2x.png",
+				// fileSize: 24420,
 			}
 			TitanStorage.getInstance().downloadAsset(options, (progress) => {
 				console.log(`下载进度: ${progress}%`);
@@ -343,7 +358,7 @@
 			if (file) {
 				const sdk = TitanStorage.getInstance();
 				// const assetData = { areaId: ["xx"], groupId: 0, assetType: 0, extraId: "52145655" };
-				const assetData = { groupId: 0, assetType: 0 };
+				const assetData = { groupId: 0, assetType: 0 ,areaId: ["beijing","shanghai"],};
 				var res = await sdk.uploadAsset(file, assetData, (loaded, total, percent) =>
 					console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
 				);
