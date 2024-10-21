@@ -1,9 +1,7 @@
 import { log, onHandleData } from "../errorHandler"; // 导入错误处理相关的模块
 import StatusCodes from "../codes"; // 导入状态码模块
-import { Validator } from "../validators"; // 导入验证模块
 import Report from "../report"; // 导入报告模块
-
-import SparkMD5 from "../spark-md5"
+import SparkMD5 from "../spark-md5";
 class UploadLoader {
   constructor(httpService) {
     this.httpService = httpService; // 接收 Http 实例
@@ -51,20 +49,24 @@ class UploadLoader {
       extraId,
       retryCount,
       onProgress
-    )
+    );
     return uploadResults; // 返回最终的上传结果
   }
 
-
   // 处理文件上传
-  async handleFileUpload(file, areaId, groupId, extraId, retryCount = 3, onProgress) {
-
+  async handleFileUpload(
+    file,
+    areaId,
+    groupId,
+    extraId,
+    retryCount = 3,
+    onProgress
+  ) {
     const isTempUpload = groupId === -1; // 判断是否为临时上传 （-1 临时文件）
     const uploadResults = []; // 记录上传结果
     const startTime = Date.now(); // 上传开始时间
     let uploadSuccessful = false; // 上传是否成功的标记
     try {
-
       const hashRes = await this.calculateFileHash(file);
 
       if (hashRes.code != 0) return hashRes;
@@ -74,17 +76,24 @@ class UploadLoader {
       const res = await this.httpService.getFileUploadURL({
         isLoggedIn: !isTempUpload,
         areaIds: areaId,
-        isFolder: false,
         assetData: md5,
       });
 
-      console.log(111, res.data.AlreadyExists)
+      //console.log(111, res.data.AlreadyExists);
       if (res.code != 0) return res;
 
       if (res.data.AlreadyExists) {
-        const result = await this.onCreateAsset(isTempUpload, file, areaId, groupId, extraId, md5, { cid: res.data.CID, nodeId: "" })
+        const result = await this.onCreateAsset(
+          isTempUpload,
+          file,
+          areaId,
+          groupId,
+          extraId,
+          md5,
+          { cid: res.data.CID, nodeId: "" }
+        );
         // 返回成功结果，保留 cId
-        return result
+        return result;
       }
 
       const uploadAddresses = res.data;
@@ -127,14 +136,27 @@ class UploadLoader {
         return uploadResult; // 返回上传结果
       };
 
-      const uploadResult = await this.uploadWithRetry(uploadAddresses.List, attemptUpload, retryCount, onProgress);
+      const uploadResult = await this.uploadWithRetry(
+        uploadAddresses.List,
+        attemptUpload,
+        retryCount,
+        onProgress
+      );
       ///数据上报
       this.report.creatReportData(uploadResults, "upload");
       // 处理上传结果
       if (uploadResult.code === 0) {
-        const result = await this.onCreateAsset(isTempUpload, file, areaId, groupId, extraId, md5, uploadResult)
+        const result = await this.onCreateAsset(
+          isTempUpload,
+          file,
+          areaId,
+          groupId,
+          extraId,
+          md5,
+          uploadResult
+        );
         // 返回成功结果，保留 cId
-        return result
+        return result;
       } else {
         return {
           code: StatusCodes.UPLOAD_FILE_ERROR, // 上传文件错误状态码
@@ -151,7 +173,10 @@ class UploadLoader {
     // 递归函数：逐个处理地址
     const processAddress = async (index) => {
       if (index >= addresses.length) {
-        return { code: StatusCodes.UPLOAD_FILE_ERROR, msg: "All upload addresses failed." };
+        return {
+          code: StatusCodes.UPLOAD_FILE_ERROR,
+          msg: "All upload addresses failed.",
+        };
       }
 
       for (let attempts = 0; attempts < retryCount; attempts++) {
@@ -160,7 +185,9 @@ class UploadLoader {
           if (uploadResult.code === 0) return uploadResult; // 成功上传
         } catch (error) {
           // 等待后重试
-          await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, attempts)));
+          await new Promise((resolve) =>
+            setTimeout(resolve, 1000 * Math.pow(2, attempts))
+          );
         }
       }
 
@@ -184,8 +211,8 @@ class UploadLoader {
         resolve({
           code: 0,
           data: {
-            hash: hash
-          }
+            hash: hash,
+          },
         }); // 返回计算的hash
       };
 
@@ -199,14 +226,21 @@ class UploadLoader {
     });
   }
   /// 上传完成后的操作
-  async onCreateAsset(isTempUpload, file, areaId, groupId, extraId, md5, uploadResult) {
+  async onCreateAsset(
+    isTempUpload,
+    file,
+    areaId,
+    groupId,
+    extraId,
+    md5,
+    uploadResult
+  ) {
     // 构建基本的 assetData 对象
     const assetData = {
       asset_name: file.name,
       asset_type: "file",
       asset_size: file.size,
       asset_cid: uploadResult.cid,
-
       group_id: groupId,
       node_id: uploadResult.nodeId,
       extra_id: extraId,
@@ -216,9 +250,8 @@ class UploadLoader {
 
     if (!isTempUpload) {
       // 如果不是临时文件：请求创建：
-      res2 = await this.httpService.getFileUploadURL({
+      res2 = await this.httpService.postFileUpload({
         isLoggedIn: true,
-        isFolder: true,
         assetData: {
           ...assetData,
           md5: md5,
@@ -227,9 +260,8 @@ class UploadLoader {
       });
     } else {
       // 外部上传没有登录的情况
-      res2 = await this.httpService.getFileUploadURL({
+      res2 = await this.httpService.postFileUpload({
         isLoggedIn: false,
-        isFolder: true,
         assetData: {
           ...assetData,
           area_ids: areaId,
@@ -259,9 +291,6 @@ class UploadLoader {
       });
     }
   }
-
-
-
 }
 
-export default UploadLoader; 
+export default UploadLoader;

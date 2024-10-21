@@ -42,7 +42,6 @@ class CommService {
     }
   }
 
-
   /**
    * Retrieves the area ID.
    * @returns {Promise<Object>} Area ID data.
@@ -270,7 +269,6 @@ class CommService {
     }
   }
 
-
   /**
    * 处理文件上传逻辑
    * @param {File} file - 要上传的文
@@ -294,8 +292,6 @@ class CommService {
     onProgress,
     onStreamStatus
   ) {
-
-
     const validationResult = Validator.validateUploadOptions(
       file,
       assetData.areaId,
@@ -395,7 +391,7 @@ class CommService {
       const traceId = res.data.trace_id;
 
       // 实例化 Downloader
-      const downloader = new Downloader(this.Http);
+      const downloader = new Downloader(this.httpService);
       if (assetType == "folder") {
         var downresult = await downloader.downloadFromMultipleUrls(
           urls,

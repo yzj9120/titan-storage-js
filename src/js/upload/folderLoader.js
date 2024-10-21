@@ -1,6 +1,5 @@
 import { log, onHandleData } from "../errorHandler"; // 导入错误处理相关的模块
 import StatusCodes from "../codes"; // 导入状态码模块
-import { Validator } from "../validators"; // 导入验证模块
 import Report from "../report"; // 导入报告模块
 import {
   createFileEncoderStream,
@@ -38,12 +37,7 @@ class FolderLoader {
   }
 
   async handleFolderUpload(file, options, onProgress, onWritableStream) {
-    const {
-      areaId = [],
-      groupId = 0,
-      extraId = "",
-      retryCount = 3,
-    } = options;
+    const { areaId = [], groupId = 0, extraId = "", retryCount = 3 } = options;
 
     const uploadResults = []; // 记录上传结果
     const startTime = Date.now(); // 上传开始时间
@@ -60,7 +54,6 @@ class FolderLoader {
       asset_name: folderName,
       asset_type: "folder",
       asset_size: streaRes.data.blob.size,
-      area_id: areaId,
       group_id: groupId,
       asset_cid: streaRes.data.rootCid,
       extra_id: extraId,
@@ -68,17 +61,25 @@ class FolderLoader {
     };
 
     const isTempUpload = groupId === -1; // 判断是否为临时上传
-    const res = await this.httpService.getFileUploadURL({
+
+    var assetData2 = {};
+    if (isTempUpload) {
+      assetData2 = {
+        ...assetData,
+        area_ids: areaId,
+      };
+    } else {
+      assetData2 = {
+        ...assetData,
+        area_id: areaId,
+      };
+    }
+    /// 获取下载地址：
+    const res = await this.httpService.postFileUpload({
       isLoggedIn: !isTempUpload,
       areaIds: areaId,
-      isFolder: true,
-      assetData,
+      assetData: assetData2,
     });
-
-    if (res.code !== 0) return res;
-
-    const uploadAddresses = res.data.List ?? [];
-
     // 封装上传逻辑
     const attemptUpload = async (address, blob, onProgress) => {
       const controller = new AbortController();
@@ -115,15 +116,41 @@ class FolderLoader {
       });
 
       // 记录上传结果
-      return uploadResult
+      return uploadResult;
+    };
+
+    // 处理返回结果 (文件已存在)
+    if (res.data.err && res.data.err === 1017) {
+      return onHandleData({
+        code: 0,
+        data: {
+          cid: streaRes.data.rootCid,
+          isAlreadyExist: true,
+          url: res.data.assetDirectUrl,
+        },
+      });
     }
-    const uploadResult = await this.uploadWithRetry(uploadAddresses, attemptUpload, retryCount, streaRes.data.blob, onProgress);
+    // 失败返回
+    if (res.code !== 0) return res;
+
+    const uploadAddresses = res.data.List ?? [];
+
+    const uploadResult = await this.uploadWithRetry(
+      uploadAddresses,
+      attemptUpload,
+      retryCount,
+      streaRes.data.blob,
+      onProgress
+    );
 
     this.report.creatReportData(uploadResults, "upload");
     // 处理上传结果
     if (uploadResult.code === 0) {
       // 返回成功结果，保留 cId
-      return { ...uploadResult, cId: uploadResult.cId !== undefined ? uploadResult.cId : streaRes.data.rootCid };
+      return {
+        ...uploadResult,
+        cid: streaRes.data.rootCid,
+      };
     } else {
       return {
         code: StatusCodes.UPLOAD_FILE_ERROR, // 上传文件错误状态码
@@ -139,58 +166,97 @@ class FolderLoader {
       let rootCID;
 
       createDirectoryEncoderStream(file)
-        .pipeThrough(new TransformStream({
-          transform: (block, controller) => {
-            rootCID = block.cid;
-            controller.enqueue(block);
-          },
-        }))
+        .pipeThrough(
+          new TransformStream({
+            transform: (block, controller) => {
+              rootCID = block.cid;
+              controller.enqueue(block);
+            },
+          })
+        )
         .pipeThrough(new CAREncoderStream())
-        .pipeTo(new WritableStream({
-          write(chunk) {
-            if (!myFile) {
-              myFile = chunk;
-            } else {
-              // 合并数据块
-              let mergedArray = new Uint8Array(myFile.length + chunk.length);
-              mergedArray.set(myFile);
-              mergedArray.set(chunk, myFile.length);
-              myFile = mergedArray;
-            }
-            if (onWritableStream) onWritableStream("writing");
-          },
-          close: () => {
-            if (onWritableStream) onWritableStream("close");
-            resolve(onHandleData({ code: 0, data: { blob: new Blob([myFile]), rootCid: rootCID.toString() } }));
-          },
-          abort(error) {
-            if (onWritableStream) onWritableStream("abort");
-            reject(onHandleData({ code: StatusCodes.UPLOAD_FILE_ERROR, msg: error }));
-          },
-        }))
-        .catch(error => reject(onHandleData({ code: StatusCodes.UPLOAD_FILE_ERROR, msg: error })));
+        .pipeTo(
+          new WritableStream({
+            write(chunk) {
+              if (!myFile) {
+                myFile = chunk;
+              } else {
+                // 合并数据块
+                let mergedArray = new Uint8Array(myFile.length + chunk.length);
+                mergedArray.set(myFile);
+                mergedArray.set(chunk, myFile.length);
+                myFile = mergedArray;
+              }
+              if (onWritableStream) onWritableStream("writing");
+            },
+            close: () => {
+              if (onWritableStream) onWritableStream("close");
+              resolve(
+                onHandleData({
+                  code: 0,
+                  data: {
+                    blob: new Blob([myFile]),
+                    rootCid: rootCID.toString(),
+                  },
+                })
+              );
+            },
+            abort(error) {
+              if (onWritableStream) onWritableStream("abort");
+              reject(
+                onHandleData({
+                  code: StatusCodes.UPLOAD_FILE_ERROR,
+                  msg: error,
+                })
+              );
+            },
+          })
+        )
+        .catch((error) =>
+          reject(
+            onHandleData({ code: StatusCodes.UPLOAD_FILE_ERROR, msg: error })
+          )
+        );
     });
   }
 
-
-  async uploadWithRetry(addresses, attemptUpload, retryCount, blob, onProgress) {
+  async uploadWithRetry(
+    addresses,
+    attemptUpload,
+    retryCount,
+    blob,
+    onProgress
+  ) {
     // 递归函数：逐个处理地址
     const processAddress = async (index) => {
       if (index >= addresses.length) {
-        return { code: StatusCodes.UPLOAD_FILE_ERROR, msg: "All upload addresses failed." };
+        return {
+          code: StatusCodes.UPLOAD_FILE_ERROR,
+          msg: "All upload addresses failed.",
+        };
       }
 
       for (let attempts = 0; attempts < retryCount; attempts++) {
-        log(`Processing address ${index + 1}/${addresses.length}, attempt ${attempts + 1}/${retryCount}`);
+        log(
+          `Processing address ${index + 1}/${addresses.length}, attempt ${
+            attempts + 1
+          }/${retryCount}`
+        );
 
         try {
-          const uploadResult = await attemptUpload(addresses[index], blob, onProgress); // 尝试上传
+          const uploadResult = await attemptUpload(
+            addresses[index],
+            blob,
+            onProgress
+          ); // 尝试上传
           if (uploadResult.code === 0) {
             return uploadResult; // 成功上传
           }
         } catch (error) {
           // 等待后重试
-          await new Promise((resolve) => setTimeout(resolve, 1000 * Math.pow(2, attempts)));
+          await new Promise((resolve) =>
+            setTimeout(resolve, 1000 * Math.pow(2, attempts))
+          );
         }
       }
       // 递归处理下一个地址
@@ -200,10 +266,11 @@ class FolderLoader {
     return processAddress(0);
   }
 
-
   // 延迟重试
   delayRetry(attempts) {
-    return new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, attempts)));
+    return new Promise((resolve) =>
+      setTimeout(resolve, 1000 * Math.pow(2, attempts))
+    );
   }
 
   // 处理上传错误
@@ -213,8 +280,6 @@ class FolderLoader {
       msg: "All upload addresses failed.",
     };
   }
-
-
 }
 
-export default FolderLoader; 
+export default FolderLoader;

@@ -139,7 +139,7 @@
 		try {
 			// Initialize TitanSDK
 			TitanStorage.initialize({
-				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjk1Mjc2NDEsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyOTQ0MTI0MSwicm9sZSI6MH0.RkmrPF8UEavb7U6EqhjNmpNMmPBQTXPk7sWOTyePduw', // Replace with actual app key
+				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjk2MDg1NTMsImlkIjoidGl0YW4xM2N1djU1N3F6emZoajd2N2R2aGNqNGR0ZHV1MDN0bXlxY3Q2OWUiLCJvcmlnX2lhdCI6MTcyOTUyMjE1Mywicm9sZSI6MH0._HAzJCaW34synz5NUrSgAf7MqTGTT5wFFtPVCzAewaY', // Replace with actual app key
 				debug: true
 			});
 
@@ -338,7 +338,7 @@
 			const options = {
 				areaId: ["beijing", "shanghai"],
 				userId: "",
-				assetCid: "bafkreiefqzkdgno7by2p4q7xw2qbzwuixgndxrhlgcuxgo64dapnlindwe",
+				assetCid: "bafkreicljmjgltvygpozsvmqeee2w6bjpralv3fyshhtvcu6lill2xlqre",
 				assetType: "file", //file,folder 
 				// hasTempFile: true,
 				// tempFileName: "组 569033@2x.png",
@@ -364,7 +364,7 @@
 			if (file) {
 				const sdk = TitanStorage.getInstance();
 				// const assetData = { areaId: ["xx"], groupId: 0, assetType: 0, extraId: "52145655" };
-				const assetData = { groupId: -1, assetType: 0, areaId: [], };
+				const assetData = { groupId: 0, assetType: 0, areaId: [], };
 				var res = await sdk.uploadAsset(file, assetData, (loaded, total, percent) =>
 					console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
 				);

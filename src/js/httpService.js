@@ -4,43 +4,51 @@ class HttpService {
   }
   /// Get upload address
   async getFileUploadURL(options) {
-    const { isLoggedIn, isFolder, assetData, areaIds } = options;
+    const { isLoggedIn, assetData, areaIds } = options;
     let url;
     // 判断是否已登录
     if (isLoggedIn) {
-      if (isFolder) {
-        // 已登录文件夹上传：创建资源
-        url = "/api/v1/storage/create_asset";
-        return await this.Http.postData(url, assetData);
-      } else {
-        // 已登录文件上传：获取上传地址
-        url =
-          "/api/v1/storage/get_upload_info?t=" + new Date().getTime() + "&need_trace=true&md5=" + assetData;
-        if (areaIds && areaIds.length > 0) {
-          const areaIdParams = areaIds
-            .map((id) => `area_id=${encodeURIComponent(id)}`)
-            .join("&");
-          url += `&${areaIdParams}`;
-        }
-        return await this.Http.getData(url);
+      // 已登录文件上传：获取上传地址
+      url =
+        "/api/v1/storage/get_upload_info?t=" +
+        new Date().getTime() +
+        "&need_trace=true&md5=" +
+        assetData;
+      if (areaIds && areaIds.length > 0) {
+        const areaIdParams = areaIds
+          .map((id) => `area_id=${encodeURIComponent(id)}`)
+          .join("&");
+        url += `&${areaIdParams}`;
       }
+      return await this.Http.getData(url);
     } else {
-      if (isFolder) {
-        // 未登录文件夹上传
-        url = "/api/v1/storage/temp_file/upload";
-        return await this.Http.postData(url, assetData);
-      } else {
-        // 未登录文件上传：获取上传地址
-        url =
-          "/api/v1/storage/temp_file/get_upload_file?t=" + new Date().getTime() + "&need_trace=true";
-        if (areaIds && areaIds.length > 0) {
-          const areaIdParams = areaIds
-            .map((id) => `area_id=${encodeURIComponent(id)}`)
-            .join("&");
-          url += `&${areaIdParams}`;
-        }
-        return await this.Http.getData(url);;
+      // 未登录（临时文件）文件上传：获取上传地址
+      url =
+        "/api/v1/storage/temp_file/get_upload_file?t=" +
+        new Date().getTime() +
+        "&need_trace=true";
+      if (areaIds && areaIds.length > 0) {
+        const areaIdParams = areaIds
+          .map((id) => `area_id=${encodeURIComponent(id)}`)
+          .join("&");
+        url += `&${areaIdParams}`;
       }
+      return await this.Http.getData(url);
+    }
+  }
+
+  async postFileUpload(options) {
+    const { isLoggedIn, assetData } = options;
+    let url;
+    // 判断是否已登录
+    if (isLoggedIn) {
+      // 已登录文件夹上传：创建资源
+      url = "/api/v1/storage/create_asset";
+      return await this.Http.postData(url, assetData);
+    } else {
+      // 未登录（临时文件）文件夹上传
+      url = "/api/v1/storage/temp_file/upload";
+      return await this.Http.postData(url, assetData);
     }
   }
 
