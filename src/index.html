@@ -131,15 +131,21 @@
 
 </body>
 <script src="./js/titanStorage.js"></script>
+<script src="./js/spark-md5.js"></script>
+
 <script>
 	document.addEventListener('DOMContentLoaded', function () {
 
 		try {
 			// Initialize TitanSDK
 			TitanStorage.initialize({
-				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjk0MjI3ODYsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyOTMzNjM4Niwicm9sZSI6MH0.Wmt_gOqQFbMu1Ol-gAIDCo94flw6IKaD-2oKP2Mt73k', // Replace with actual app key
+				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjk1Mjc2NDEsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyOTQ0MTI0MSwicm9sZSI6MH0.RkmrPF8UEavb7U6EqhjNmpNMmPBQTXPk7sWOTyePduw', // Replace with actual app key
 				debug: true
 			});
+
+
+
+			//	TitanStorage.getInstance().	updateLanguage("aaaaa")
 
 
 		} catch (error) {
@@ -323,14 +329,14 @@
 
 		});
 
-		
+
 
 
 
 		document.getElementById('downloadAsset').addEventListener('click', async () => {
 			///下载 https://api-test1.container1.titannet.io/api/v1/storage/temp_file/share/bafkreianachejwgaf4fap7vnp3bsf62rnzkdnc3pgkwye7xwpxfuuavhbq
 			const options = {
-				areaId: ["beijing","shanghai"],
+				areaId: ["beijing", "shanghai"],
 				userId: "",
 				assetCid: "bafkreiefqzkdgno7by2p4q7xw2qbzwuixgndxrhlgcuxgo64dapnlindwe",
 				assetType: "file", //file,folder 
@@ -358,7 +364,7 @@
 			if (file) {
 				const sdk = TitanStorage.getInstance();
 				// const assetData = { areaId: ["xx"], groupId: 0, assetType: 0, extraId: "52145655" };
-				const assetData = { groupId: 0, assetType: 0 ,areaId: ["beijing","shanghai"],};
+				const assetData = { groupId: -1, assetType: 0, areaId: [], };
 				var res = await sdk.uploadAsset(file, assetData, (loaded, total, percent) =>
 					console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
 				);

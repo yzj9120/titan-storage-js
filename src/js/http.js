@@ -1,6 +1,7 @@
 import StatusCodes from "./codes";
 import { log, onHandleData } from "./errorHandler";
 
+
 export class Http {
   constructor(token, url, debug = false) {
     this.token = token;
@@ -19,15 +20,22 @@ export class Http {
   }
 
   checkLanguage() {
-    const language = navigator.language || navigator.userLanguage; // 获取语言
-    if (language.includes('zh')) {
+    const language = navigator.language || navigator.userLanguage;
+    const storedLang = localStorage.getItem("ttStorageLanguage");
+
+    if (storedLang) {
+      return storedLang;
+    }
+
+    if (language.includes("zh")) {
       return "cn";
-    } else if (language.includes('en')) {
+    } else if (language.includes("en")) {
       return "en";
     } else {
       return "";
     }
   }
+
 
   updateToken(newToken) {
     if (newToken && newToken.trim() !== "") {
@@ -37,6 +45,16 @@ export class Http {
       return onHandleData({ code: StatusCodes.FAILURE });
     }
   }
+
+  updateLanguage(language) {
+    if (language && language.trim() !== "") {
+      localStorage.setItem("ttStorageLanguage", language)
+      return onHandleData({ code: StatusCodes.SUCCESSFULLY });
+    } else {
+      return onHandleData({ code: StatusCodes.FAILURE });
+    }
+  }
+
 
   getData(endpoint) {
     const requestUrl = `${this.url}${endpoint}`;
@@ -49,7 +67,7 @@ export class Http {
     const lang = this.checkLanguage();
     const headers = {
       "Content-Type": "application/json",
-      "lang": lang
+      lang: lang,
     };
     if (this.token != "token") {
       headers["JwtAuthorization"] = "Bearer " + this.token;
@@ -61,11 +79,13 @@ export class Http {
     })
       .then((response) => {
         if (response.ok) {
-
           return response.json();
         } else {
           return response.text().then((errorText) => {
-            return onHandleData({ code: response.status, msg: errorText ?? "" });
+            return onHandleData({
+              code: response.status,
+              msg: errorText ?? "",
+            });
           });
         }
       })
@@ -74,10 +94,12 @@ export class Http {
         const { code, msg, data, ...otherFields } = res; // 解构出 code, msg 和 data
 
         return onHandleData({
-          code: code, msg: msg ?? "", data: {
+          code: code,
+          msg: msg ?? "",
+          data: {
             ...data,
             ...otherFields, // 将其他字段添加到data中
-          }
+          },
         });
         // return res;
       })
@@ -95,7 +117,7 @@ export class Http {
     const lang = this.checkLanguage();
     const headers = {
       "Content-Type": "application/json",
-      "lang": lang
+      lang: lang,
     };
     if (this.token != "token") {
       headers["JwtAuthorization"] = "Bearer " + this.token;
@@ -113,7 +135,10 @@ export class Http {
           return response.text().then((errorText) => {
             // 处理特定的 HTTP 错误
             const errorMessage = `Error ${response.status}: ${errorText}`;
-            var res = onHandleData({ code: response.status, msg: errorMessage });
+            var res = onHandleData({
+              code: response.status,
+              msg: errorMessage,
+            });
             return Promise.reject(res);
           });
         }
@@ -123,11 +148,14 @@ export class Http {
 
         const { code, msg, data, ...otherFields } = res; // 解构出 code, msg 和 data
 
+
         return onHandleData({
-          code: code, msg: msg ?? "", data: {
-            ...data,
+          code: code,
+          msg: msg ?? "",
+          data: {
+            ...(Array.isArray(data) ? { List: data } : data), // 如果 data 是数组，添加 list 字段
             ...otherFields, // 将其他字段添加到data中
-          }
+          },
         });
 
         // return onHandleData({ code: res.code, msg: res.msg ?? "", data: res.data });
@@ -175,7 +203,6 @@ export class Http {
           const responseData = JSON.parse(xhr.responseText);
           log("File uploaded successfully:", responseData);
           if (onProgress) {
-
             onProgress(size, size, 100);
           }
           resolve(responseData);
@@ -186,10 +213,9 @@ export class Http {
       };
       // Handle errors
       xhr.onerror = () => {
-        const errorMessage = `File upload failed: ${xhr.statusText || "Handle network errors"}`;
-        reject(
-          onHandleData(StatusCodes.FETCH_ERROR, errorMessage)
-        );
+        const errorMessage = `File upload failed: ${xhr.statusText || "Handle network errors"
+          }`;
+        reject(onHandleData(StatusCodes.FETCH_ERROR, errorMessage));
       };
 
       // Handle request abortion
@@ -211,4 +237,6 @@ export class Http {
       xhr.send(formData);
     });
   }
+
+
 }

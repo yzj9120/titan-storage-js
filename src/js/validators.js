@@ -100,4 +100,23 @@ export const Validator = {
       return onHandleData({ code: StatusCodes.SHARE_ERROE, msg: "Share status is invalid" });
     }
   },
+  // 验证上传参数
+  validateUploadOptions(file, areaId, groupId, assetType) {
+    const validators = [
+      { fn: Validator.validateAreaId, value: areaId },
+      { fn: Validator.validateGroupId, value: groupId },
+      { fn: Validator.validateAssetType, value: assetType },
+    ];
+
+    // 额外验证文件大小
+    if (groupId === -1 && Validator.validateAssetFile(file.size))
+      return Validator.validateAssetFile(file.size);
+
+    for (const { fn, value } of validators) {
+      const result = fn(value);
+      if (result) return result; // 返回验证失败信息
+    }
+    return null; // 所有验证通过
+  }
+
 };

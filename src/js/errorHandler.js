@@ -5,9 +5,6 @@ export function handleError(statusCode, errorMessage) {
   let userMessage;
 
   switch (statusCode) {
-
-
-
     case StatusCodes.InitSdk_OK:
       userMessage = "Initialize SDK Success";
       break;
@@ -142,11 +139,7 @@ export function log(message, data = {}, debug = true) {
   }
 }
 
-export function onHandleData({
-  code,
-  msg = "",
-  data = {}
-} = {}) {
+export function onHandleData({ code, msg = "", data = {} } = {}) {
   let errorDetails = { code, msg };
   if (!msg) {
     errorDetails = handleError(code, msg);
@@ -155,9 +148,6 @@ export function onHandleData({
   return {
     code: errorDetails.code,
     msg: errorDetails.msg,
-    data: data || {}
+    data: data || {},
   };
 }
-
-
-

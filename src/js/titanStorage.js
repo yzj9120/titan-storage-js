@@ -57,6 +57,13 @@ class TitanStorage {
     return data;
   }
 
+  async updateLanguage(language) {
+    const data = this.commService.updateLanguage(language);
+    return data;
+  }
+
+
+
   /**
    * Get the area IDs
    * @returns {Promise<Object>} List of area IDs

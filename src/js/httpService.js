@@ -4,7 +4,7 @@ class HttpService {
   }
   /// Get upload address
   async getFileUploadURL(options) {
-    const { isLoggedIn, isFolder, assetData } = options;
+    const { isLoggedIn, isFolder, assetData, areaIds } = options;
     let url;
     // 判断是否已登录
     if (isLoggedIn) {
@@ -15,9 +15,13 @@ class HttpService {
       } else {
         // 已登录文件上传：获取上传地址
         url =
-          "/api/v1/storage/get_upload_info?t=" +
-          new Date().getTime() +
-          "&need_trace=true";
+          "/api/v1/storage/get_upload_info?t=" + new Date().getTime() + "&need_trace=true&md5=" + assetData;
+        if (areaIds && areaIds.length > 0) {
+          const areaIdParams = areaIds
+            .map((id) => `area_id=${encodeURIComponent(id)}`)
+            .join("&");
+          url += `&${areaIdParams}`;
+        }
         return await this.Http.getData(url);
       }
     } else {
@@ -28,10 +32,14 @@ class HttpService {
       } else {
         // 未登录文件上传：获取上传地址
         url =
-          "/api/v1/storage/temp_file/get_upload_file?t=" +
-          new Date().getTime() +
-          "&need_trace=true";
-        return await this.Http.getData(url);
+          "/api/v1/storage/temp_file/get_upload_file?t=" + new Date().getTime() + "&need_trace=true";
+        if (areaIds && areaIds.length > 0) {
+          const areaIdParams = areaIds
+            .map((id) => `area_id=${encodeURIComponent(id)}`)
+            .join("&");
+          url += `&${areaIdParams}`;
+        }
+        return await this.Http.getData(url);;
       }
     }
   }
@@ -149,21 +157,38 @@ class HttpService {
     return await this.Http.postData("/api/v1/storage/transfer/report", options);
   }
 
-  //create_link 
+  //create_link
   async createLink(queryParam) {
     return await this.Http.getData("/api/v1/storage/create_link" + queryParam);
   }
   //share_status_set
   async shareStatusSet(queryParam) {
-    return await this.Http.getData("/api/v1/storage/share_status_set" + queryParam);
+    return await this.Http.getData(
+      "/api/v1/storage/share_status_set" + queryParam
+    );
   }
-  //share_link_info 
+  //share_link_info
   async shareLinkInfo(queryParam) {
-    return await this.Http.getData("/api/v1/storage/share_link_info" + queryParam);
+    return await this.Http.getData(
+      "/api/v1/storage/share_link_info" + queryParam
+    );
   }
   //share_link_update
   async shareLinkUpdate(options) {
-    return await this.Http.postData("/api/v1/storage/share_link_update", options);
+    return await this.Http.postData(
+      "/api/v1/storage/share_link_update",
+      options
+    );
+  }
+  async uploadFile(uploadUrl, token, file, signal, onProgress) {
+    return await this.Http.uploadFile(
+      uploadUrl,
+      token,
+      file,
+      null,
+      onProgress,
+      signal
+    );
   }
 }
 

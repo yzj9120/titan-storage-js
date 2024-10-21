@@ -102,7 +102,13 @@ class ShareLoader {
     hasDomain
   }) {
     try {
+
+      const options = JSON.parse(localStorage.getItem("titanOptions"));
       const baseURL = "https://storage.titannet.io";
+      if (options.url) {
+        baseURL = options.url;
+      }
+
       const path = isNumeric ? "/groupPreview" : "/distributionstatus";
 
       // 构建预览 URL

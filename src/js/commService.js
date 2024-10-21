@@ -4,7 +4,9 @@ import { Validator } from "./validators";
 import HttpService from "./httpService";
 
 import Downloader from "./downloader";
-import UploadLoader from "./uploadLoader";
+import UploadLoader from "./upload/uploadLoader";
+import FolderLoader from "./upload/folderLoader";
+
 import ShareLoader from "./shareLoader"; // 导入 ShareLoader
 
 class CommService {
@@ -27,6 +29,19 @@ class CommService {
       });
     }
   }
+
+  async updateLanguage(language) {
+    try {
+      const data = this.Http.updateLanguage(language);
+      return data;
+    } catch (error) {
+      return onHandleData({
+        code: StatusCodes.FAILURE,
+        msg: error,
+      });
+    }
+  }
+
 
   /**
    * Retrieves the area ID.
@@ -62,7 +77,7 @@ class CommService {
         log(validator2);
         return validator;
       }
-      return await this.httpService.createGroup(name, parent)
+      return await this.httpService.createGroup(name, parent);
     } catch (error) {
       return onHandleData({
         code: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -152,7 +167,6 @@ class CommService {
         return validateAssetCid;
       }
 
-
       return await this.httpService.renameAsset(options);
     } catch (error) {
       return onHandleData({
@@ -222,8 +236,6 @@ class CommService {
     }
   }
 
-  
-
   /**
    * Retrieves user-related information.
    * @returns {Promise<Object>} Combined user information.
@@ -258,64 +270,6 @@ class CommService {
     }
   }
 
-  /**
-   * 获取文件上传地址组
-   * @returns {Promise<Object>} 文件上传地址组
-   */
-  async getUploadAddresses() {
-    try {
-      const response = await this.Http.getData(
-        "/api/v1/storage/get_upload_info?t=" + new Date().getTime()
-      );
-      if (response.code !== 0) {
-        return onHandleData({
-          code: response.code,
-          msg: "Failed to get upload addresses: " + response,
-        });
-      }
-      return response.data.List;
-    } catch (error) {
-      return onHandleData({
-        code: StatusCodes.INTERNAL_SERVER_ERROR,
-        msg: "Failed to get upload addresses: " + error,
-      });
-    }
-  }
-  /**
-  /**
- * 上传文件并监听进度
- * @param {string} uploadUrl - 文件上传地址
- * @param {string} token - 上传凭证
- * @param {File} file - 要上传的文件
- * @param {Function} onProgress - 进度回调函数，接受已上传字节数和总字节数作为参数
- * @returns {Promise<Object>} 上传结果
- */
-
-  /**
-   * 创建
-   * @param {Object} assetData - 资产数据
-   * @returns {Promise<Object>} 创建资产的结果
-   */
-  async createAsset(assetData) {
-    try {
-      const response = await this.Http.postData(
-        "/api/v1/storage/create_asset",
-        assetData
-      );
-      if (response.code !== 0) {
-        return onHandleData({
-          code: response.code,
-          msg: "Failed to create asset ",
-        });
-      }
-      return response;
-    } catch (error) {
-      return onHandleData({
-        code: StatusCodes.INTERNAL_SERVER_ERROR,
-        msg: "Failed to create asset: " + error,
-      });
-    }
-  }
 
   /**
    * 处理文件上传逻辑
@@ -335,18 +289,44 @@ class CommService {
       groupId: 0,
       assetType: 0,
       extraId: "",
-      retryCount: 2,
+      retryCount: 3,
     },
     onProgress,
     onStreamStatus
   ) {
-    this.uploadLoader = new UploadLoader(this.Http);
-    return await this.uploadLoader.onFileUpload(
+
+
+    const validationResult = Validator.validateUploadOptions(
       file,
-      assetData,
-      onProgress,
-      onStreamStatus
+      assetData.areaId,
+      assetData.groupId,
+      assetData.assetType
     );
+    if (validationResult) return validationResult; // 返回验证失败信息
+
+    if (assetData.assetType === 0) {
+      ///文件
+      this.uploadLoader = new UploadLoader(this.httpService);
+      return await this.uploadLoader.onFileUpload(
+        file,
+        assetData,
+        onProgress,
+        onStreamStatus
+      );
+    } else if (assetData.assetType === 1) {
+      //文件夹
+      this.folderLoader = new FolderLoader(this.httpService);
+      return await this.folderLoader.handleFolderUpload(
+        file,
+        assetData,
+        onProgress,
+        onStreamStatus
+      );
+    } else {
+      return onHandleData({
+        code: StatusCodes.Asset_Type_ERROR,
+      });
+    }
   }
   ///下载
   async onFileDown(
@@ -361,20 +341,29 @@ class CommService {
     },
     onProgress
   ) {
-    const { assetCid, assetType, userId, areaId, hasTempFile, tempFileName, fileSize } =
-      options;
+    const {
+      assetCid,
+      assetType,
+      userId,
+      areaId,
+      hasTempFile,
+      tempFileName,
+      fileSize,
+    } = options;
 
     const validateAssetCid = Validator.validateAssetCid(assetCid);
     if (validateAssetCid) return validateAssetCid;
     /// 登录下载
-    let url = `/api/v1/storage/share_asset?asset_cid=` + assetCid + "&need_trace=true";
+    let url =
+      `/api/v1/storage/share_asset?asset_cid=` + assetCid + "&need_trace=true";
     if (userId) {
       /// 使用uid 标识下载（分享，详情等模块）
       url =
         "/api/v1/storage/open_asset?user_id=" +
         userId +
         "&asset_cid=" +
-        assetCid + "&need_trace=true";;
+        assetCid +
+        "&need_trace=true";
       if (areaId && areaId.length > 0) {
         const areaIdParams = areaId
           .map((id) => `area_id=${encodeURIComponent(id)}`)
@@ -384,7 +373,8 @@ class CommService {
     }
     if (hasTempFile) {
       /// 临时文件下载
-      url = "/api/v1/storage/temp_file/download/" + assetCid + "?need_trace=true";
+      url =
+        "/api/v1/storage/temp_file/download/" + assetCid + "?need_trace=true";
     }
 
     const res = await this.Http.getData(url);
@@ -425,7 +415,6 @@ class CommService {
             onProgress(progress); // 将进度反馈给调用者
           }
         });
-
 
         //  const uuu = urls.slice(4)
 

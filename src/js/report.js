@@ -2,8 +2,8 @@ import { log, onHandleData } from "./errorHandler";
 import StatusCodes from "./codes";
 
 class Report {
-  constructor(Http) {
-    this.Http = Http;
+  constructor(httpService) {
+    this.httpService = httpService; // 接收 Http 实例
   }
   ///数据上报：
   async postReport(
@@ -31,39 +31,34 @@ class Report {
         log: log,
       };
       // 发送 POST 请求
-      const response = await this.Http.postData(
-        "/api/v1/storage/transfer/report",
-        map
-      );
+      const response = await this.httpService.postReport(map);
       // 检查响应代码是否为 0
       if (response.code !== 0) {
         return onHandleData({ code: response.code, msg: "Failed to report" });
       }
       return response;
     } catch (error) {
-      return onHandleData({ code: StatusCodes.REPORT_ERROR, msg: "Failed to report: " + error });
+      console.log(333, error);
+
+      return onHandleData({
+        code: StatusCodes.REPORT_ERROR,
+        msg: "Failed to report: " + error,
+      });
     }
   }
   ///数据上报数据创建
   creatReportData(uploadResults, type) {
-
-
     if (uploadResults.length == 0) return;
     ///数据上报：
-    const failedUploads = uploadResults.filter(
-      (result) => result.msg != "Failed to upload file: Upload aborted"
-    );
-
+    const failedUploads = uploadResults;
     // 提取 nodeId，将其转为小写，并格式化为 "node1, node2, node3"
     const nodeIdsString = failedUploads
       .map((result) => result.nodeId.toLowerCase()) // 转为小写
       .join(", ");
-
     // 合并所有 log 对象
     const combinedLog = failedUploads.reduce((acc, result) => {
       return { ...acc, ...result.log };
     }, {});
-
     // 检查是否为空对象，返回 null 或 JSON 字符串
     const combinedLogJson =
       Object.keys(combinedLog).length === 0
