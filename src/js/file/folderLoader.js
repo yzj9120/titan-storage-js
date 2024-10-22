@@ -182,6 +182,9 @@ class FolderLoader {
                 myFile = chunk;
               } else {
                 // 合并数据块
+                if (!myFile || !chunk) {
+                  throw new Error('myFile or chunk is undefined');
+                }
                 let mergedArray = new Uint8Array(myFile.length + chunk.length);
                 mergedArray.set(myFile);
                 mergedArray.set(chunk, myFile.length);
@@ -238,8 +241,7 @@ class FolderLoader {
 
       for (let attempts = 0; attempts < retryCount; attempts++) {
         log(
-          `Processing address ${index + 1}/${addresses.length}, attempt ${
-            attempts + 1
+          `Processing address ${index + 1}/${addresses.length}, attempt ${attempts + 1
           }/${retryCount}`
         );
 

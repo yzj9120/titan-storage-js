@@ -3,9 +3,10 @@ import StatusCodes from "./codes";
 import { Validator } from "./validators";
 import HttpService from "./httpService";
 
-import Downloader from "./downloader";
-import UploadLoader from "./upload/uploadLoader";
-import FolderLoader from "./upload/folderLoader";
+import UploadLoader from "./file/uploadLoader";
+import FolderLoader from "./file/folderLoader";
+import DownFolder from "./file/downfolder"
+import DownFile from "./file/downfile"
 
 import ShareLoader from "./shareLoader"; // 导入 ShareLoader
 
@@ -327,7 +328,7 @@ class CommService {
   ///下载
   async onFileDown(
     options = {
-      areaId: [],
+      areaId: "",
       assetCid: "",
       assetType: "",
       userId: "",
@@ -349,31 +350,8 @@ class CommService {
 
     const validateAssetCid = Validator.validateAssetCid(assetCid);
     if (validateAssetCid) return validateAssetCid;
-    /// 登录下载
-    let url =
-      `/api/v1/storage/share_asset?asset_cid=` + assetCid + "&need_trace=true";
-    if (userId) {
-      /// 使用uid 标识下载（分享，详情等模块）
-      url =
-        "/api/v1/storage/open_asset?user_id=" +
-        userId +
-        "&asset_cid=" +
-        assetCid +
-        "&need_trace=true";
-      if (areaId && areaId.length > 0) {
-        const areaIdParams = areaId
-          .map((id) => `area_id=${encodeURIComponent(id)}`)
-          .join("&");
-        url += `&${areaIdParams}`;
-      }
-    }
-    if (hasTempFile) {
-      /// 临时文件下载
-      url =
-        "/api/v1/storage/temp_file/download/" + assetCid + "?need_trace=true";
-    }
 
-    const res = await this.Http.getData(url);
+    const res = await this.httpService.getFileDownURL({ assetCid, userId, areaId, hasTempFile });
 
     if (res.code === 0) {
       const urls = res.data.url;
@@ -391,8 +369,9 @@ class CommService {
       const traceId = res.data.trace_id;
 
       // 实例化 Downloader
-      const downloader = new Downloader(this.httpService);
       if (assetType == "folder") {
+        const downloader = new DownFolder(this.httpService);
+      
         var downresult = await downloader.downloadFromMultipleUrls(
           urls,
           traceId,
@@ -402,19 +381,19 @@ class CommService {
           onProgress
         );
 
-        log("downresult", downresult);
 
         return downresult;
       } else if (assetType == "file") {
+
+        console.log("urls", urls.length);
+
+
+        const downloader = new DownFile(this.httpService);
         downloader.setProgressCallback((progress) => {
           if (onProgress) {
             onProgress(progress); // 将进度反馈给调用者
           }
         });
-
-        //  const uuu = urls.slice(4)
-
-        //  console.log(111, uuu)
         // 开始下载文件
         var downresult = await downloader.downloadFile(
           urls,

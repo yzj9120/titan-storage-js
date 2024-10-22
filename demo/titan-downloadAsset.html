@@ -25,7 +25,7 @@
 
                     <h4>Example</h4>
                     <pre><code>const options = {
-        areaId: [],
+        areaId: "",
         userId: "",
         assetCid: "",
         assetType: ""}
@@ -44,7 +44,7 @@
                             </ul>
                         </li>
                         <li><strong>userId</strong>: <code>String</code> - Optional. The ID of the user. Defaults to empty. Required for external downloads.</li>
-                        <li><strong>areaId</strong>: <code>Array</code> - Optional. An array of area IDs. Defaults to empty. This parameter allows the user to specify preferred download nodes; if not provided, the nearest node is automatically selected.</li>
+                        <li><strong>areaId</strong>: <code>String</code> - Optional. Area ID. Defaults to empty. This parameter allows the user to specify preferred download nodes; if not provided, the nearest node is automatically selected.</li>
                         <li><strong>onProgress</strong>: <code>Function</code> - A callback function to handle the progress of the download. It receives a single argument representing the percentage of completion as a number.</li>
                     </ul>
 

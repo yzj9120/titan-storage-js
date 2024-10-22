@@ -52,28 +52,21 @@ class HttpService {
     }
   }
 
+
   ///Get download address
-  async getFileDownURL(options) {
-    const { assetCid, assetType, userId, areaId, hasTempFile, tempFileName } =
-      options;
+  async getFileDownURL({ assetCid, userId, areaId, hasTempFile }) {
     let url;
-    // 判断是否使用临时文件下载
+    // 判断下载路径
     if (hasTempFile) {
       url = `/api/v1/storage/temp_file/download/${assetCid}`;
-    }
-    // 判断是否使用 userId 下载
-    else if (userId) {
+    } else if (userId) {
       url = `/api/v1/storage/open_asset?user_id=${userId}&asset_cid=${assetCid}`;
-      if (areaId && areaId.length > 0) {
-        const areaIdParams = areaId
-          .map((id) => `area_id=${encodeURIComponent(id)}`)
-          .join("&");
-        url += `&${areaIdParams}`;
-      }
-    }
-    // 默认使用 assetCid下载（登录）
-    else {
+    } else {
       url = `/api/v1/storage/share_asset?asset_cid=${assetCid}`;
+    }
+    // 如果有 areaId，则追加到 URL
+    if (areaId !=null && areaId!="") {
+      url += `&area_id=${encodeURIComponent(areaId)}`;
     }
     return await this.Http.getData(url);
   }

@@ -104,7 +104,7 @@ class ShareLoader {
     try {
 
       const options = JSON.parse(localStorage.getItem("titanOptions"));
-      const baseURL = "https://storage.titannet.io";
+      var baseURL = "https://storage.titannet.io";
       if (options.url) {
         baseURL = options.url;
       }

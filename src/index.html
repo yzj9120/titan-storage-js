@@ -139,8 +139,9 @@
 		try {
 			// Initialize TitanSDK
 			TitanStorage.initialize({
-				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjk2MDg1NTMsImlkIjoidGl0YW4xM2N1djU1N3F6emZoajd2N2R2aGNqNGR0ZHV1MDN0bXlxY3Q2OWUiLCJvcmlnX2lhdCI6MTcyOTUyMjE1Mywicm9sZSI6MH0._HAzJCaW34synz5NUrSgAf7MqTGTT5wFFtPVCzAewaY', // Replace with actual app key
-				debug: true
+				token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjk2NzIyMTEsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyOTU4NTgxMSwicm9sZSI6MH0.z0AsE1U14qo9YA_eq-bWdr9aPs467PKUIZQLe9iFQM4', // Replace with actual app key
+				debug: true,
+			
 			});
 
 
@@ -336,9 +337,9 @@
 		document.getElementById('downloadAsset').addEventListener('click', async () => {
 			///下载 https://api-test1.container1.titannet.io/api/v1/storage/temp_file/share/bafkreianachejwgaf4fap7vnp3bsf62rnzkdnc3pgkwye7xwpxfuuavhbq
 			const options = {
-				areaId: ["beijing", "shanghai"],
+				areaId: "",
 				userId: "",
-				assetCid: "bafkreicljmjgltvygpozsvmqeee2w6bjpralv3fyshhtvcu6lill2xlqre",
+				assetCid: "bafybeiakfko6hakzdqaz5k3eylo6rbw64l7cunjptwa6hwzvkh5rmanwpm",
 				assetType: "file", //file,folder 
 				// hasTempFile: true,
 				// tempFileName: "组 569033@2x.png",

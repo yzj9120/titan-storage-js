@@ -218,7 +218,7 @@ class TitanStorage {
    * @param {string} options.assetCid - Asset CID
    * @param {string} options.assetType - Asset type (file or folder)
    * @param {string} [options.userId] - Optional user ID
-   * @param {number[]} [options.areaId] - List of area IDs
+   * @param {string} [options.areaId] - area ID
    * @param {boolean} [options.hasTempFile] - Use temporary file (true or false)
    * @param {string} [options.tempFileName] - Temporary file name
    * @param {number} [options.fileSize] - File size
@@ -226,7 +226,7 @@ class TitanStorage {
    * @returns {Promise<Object>} Download result
    */
   async downloadAsset(options = {
-    areaId: [],
+    areaId: "",
     assetCid: "",
     assetType: "",
     userId: "",
