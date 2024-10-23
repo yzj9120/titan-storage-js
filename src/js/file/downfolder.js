@@ -159,9 +159,13 @@ class DownFolder {
         const result = await processUrl(0); // 从第一个 URL 开始处理
 
         // 返回最终结果
-        return successfulDownload
-            ? result // 如果成功下载，返回下载结果
-            : { code: -1, msg: "All url download failed" }; // 如果所有地址下载都失败，返回错误信息
+
+        return successfulDownload ? result : onHandleData({
+            code: -1,
+            msg: "All url download failed " //如果所有地址下载都失败，返回错误信息
+        });
+
+
     }
 }
 

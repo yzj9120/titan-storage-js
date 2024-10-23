@@ -228,7 +228,12 @@ class ShareLoader {
     var res = await this.httpService.shareLinkUpdate(body);
     if (res.code == 0) {
       if (hasDomain) {
-        res.data.url = "https://storage.titannet.io" + encodeURI(short_link);
+        const options = JSON.parse(localStorage.getItem("titanOptions"));
+        var baseURL = "https://storage.titannet.io";
+        if (options.url) {
+          baseURL = options.url;
+        }
+        res.data.url = baseURL + encodeURI(short_link);
       } else {
         res.data.url = encodeURI(short_link);
       }
