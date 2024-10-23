@@ -70,18 +70,25 @@
         document.addEventListener('DOMContentLoaded', function() {
             const sdk = TitanStorage.getInstance();
             // Example of file download
-            document.getElementById('downloadButton').addEventListener('click', async () => {
-                const options = {
-					// areaId: [”beijin“,"taibei"],
-					// userId: "titan1jh4ntfwyl9xqk9ehg2q7s44w99af939jcgrd2d",
-                    assetCid: "bafybeia5dwl3ueandx45ucb2276pmwmllhmwhyehugzxv2zypzfhtvcwcm",
-                    assetType: "folder", //file, folder 
-                }
-                const res = await sdk.downloadAsset(options, (progress) => {
-                    console.log(`下载进度: ${progress}%`);
-                });
-                console.log("Download result:", res);
-            });
+            const options = {
+            				areaId: "",
+            				userId: "",
+            				assetCid: "bafkreibhr6qi65i2ikjtyvs4f6sibwwicmqhr6yzdgkzcnl2ytd4fwyt5a",
+            				assetType: "file", //file,folder 
+            				// hasTempFile: true,
+            				// tempFileName: "组 569033@2x.png",
+            				// fileSize: 24420,
+            			}
+            			TitanStorage.getInstance().downloadAsset(options, (progress) => {
+            				console.log(`下载进度: ${progress}%`);
+            			})
+            				.then(res => {
+            					console.log('downloadAsset:', res);
+            
+            				})
+            				.catch(error => {
+            					console.error('error:', error);
+            				});
         });
     </script>
 

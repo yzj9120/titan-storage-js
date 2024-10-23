@@ -49,10 +49,7 @@ export const Validator = {
   validateAssetFile(fileSize) {
     // 验证文件大小是否大于 100M
     if (fileSize > 104857600) {
-
       return onHandleData({ code: StatusCodes.File_Size_ERROR, msg: "file size should not exceed 100MB." });
-
-      
     }
   },
 
@@ -108,6 +105,11 @@ export const Validator = {
       { fn: Validator.validateAssetType, value: assetType },
     ];
 
+
+    // 先检查文件大小是否大于 0
+    if (file.size <= 0) {
+      return onHandleData({ code: StatusCodes.File_Size_ERROR, msg: "File size must be greater than 0" });
+    }
     // 额外验证文件大小
     if (groupId === -1 && Validator.validateAssetFile(file.size))
       return Validator.validateAssetFile(file.size);

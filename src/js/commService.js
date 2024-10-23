@@ -295,7 +295,7 @@ class CommService {
   ) {
     const validationResult = Validator.validateUploadOptions(
       file,
-      assetData.areaId,
+      assetData.areaId??[],
       assetData.groupId,
       assetData.assetType
     );
