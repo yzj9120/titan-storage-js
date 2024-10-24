@@ -295,7 +295,7 @@ class CommService {
   ) {
     const validationResult = Validator.validateUploadOptions(
       file,
-      assetData.areaId??[],
+      assetData.areaId ?? [],
       assetData.groupId,
       assetData.assetType
     );
@@ -371,7 +371,7 @@ class CommService {
       // 实例化 Downloader
       if (assetType == "folder") {
         const downloader = new DownFolder(this.httpService);
-      
+
         var downresult = await downloader.downloadFromMultipleUrls(
           urls,
           traceId,
@@ -384,10 +384,6 @@ class CommService {
 
         return downresult;
       } else if (assetType == "file") {
-
-        console.log("urls", urls.length);
-
-
         const downloader = new DownFile(this.httpService);
         downloader.setProgressCallback((progress) => {
           if (onProgress) {

@@ -128,7 +128,7 @@ export function handleError(statusCode, errorMessage) {
   };
 }
 
-export function log(message, data = {}, debug = true) {
+export function log(message, data = {}) {
   const options = JSON.parse(localStorage.getItem("titanOptions"));
   if (options.debug) {
     if (Object.keys(data).length > 0) {
