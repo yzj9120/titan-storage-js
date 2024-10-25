@@ -202,12 +202,13 @@ class TitanStorage {
    * @returns {Promise<Object>} Upload result
    */
 
-  async uploadAsset(file, assetData, onProgress, onStreamStatus) {
+  async uploadAsset(file, assetData, onProgress, onStreamStatus, onCancel) {
     const data = await this.commService.onFileUpload(
       file,
       assetData,
       onProgress,
-      onStreamStatus
+      onStreamStatus,
+      onCancel
     );
     return data;
   }

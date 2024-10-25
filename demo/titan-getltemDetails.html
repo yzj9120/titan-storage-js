@@ -75,13 +75,13 @@ if (folderInfo.code === 0) {
                     console.error('Failed to retrieve file information:', error);
                 });
 
-            // sdk.getltemDetails({ groupId: 260 })
-            //     .then(data => {
-            //         console.log('Folder information retrieved successfully:', data);
-            //     })
-            //     .catch(error => {
-            //         console.error('Failed to retrieve folder information:', error);
-            //     });
+            sdk.getltemDetails({ groupId: 260 })
+                .then(data => {
+                    console.log('Folder information retrieved successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Failed to retrieve folder information:', error);
+                });
         });
     </script>
 

@@ -215,15 +215,14 @@ export class Http {
       xhr.onerror = () => {
         const errorMessage = `File upload failed: ${xhr.statusText || "Handle network errors"
           }`;
-        reject(onHandleData(StatusCodes.FETCH_ERROR, errorMessage));
+        reject(onHandleData({ code: StatusCodes.FETCH_ERROR, msg: errorMessage }));
+
       };
 
       // Handle request abortion
       signal.addEventListener("abort", () => {
         xhr.abort();
-        // reject(
-        //   onHandleError(StatusCodes.FETCH_ERROR, "Upload aborted")
-        // );
+        reject(onHandleData({ code: -200, msg: "Handle request abortion" }));
       });
 
       const formData = new FormData();

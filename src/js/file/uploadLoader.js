@@ -6,6 +6,7 @@ class UploadLoader {
   constructor(httpService) {
     this.httpService = httpService; // 接收 Http 实例
     this.report = new Report(this.httpService); // 创建报告实例，用于记录上传结果
+    this.abortController = null; // 添加一个属性来管理 AbortController
   }
 
   // 文件上传
@@ -27,8 +28,8 @@ class UploadLoader {
       return response; // 返回上传成功的结果
     } catch (error) {
       return onHandleData({
-        code: StatusCodes.FAILURE,
-        msg: "Failed to upload file: " + error,
+        code: error.code,
+        msg: "Failed to upload file: " + error.msg ?? "",
       });
     }
   }
@@ -82,6 +83,7 @@ class UploadLoader {
       //console.log(111, res.data.AlreadyExists);
       if (res.code != 0) return res;
 
+
       if (res.data.AlreadyExists) {
         const result = await this.onCreateAsset(
           isTempUpload,
@@ -97,15 +99,18 @@ class UploadLoader {
       }
 
       const uploadAddresses = res.data;
+
       // // 封装上传逻辑的函数
       const attemptUpload = async (address) => {
-        const controller = new AbortController(); // 创建 AbortController
+
+        this.abortController = new AbortController(); // 创建 AbortController 实例
+
         const nodeId = address.NodeID.replace(/^c_/, ""); // 去掉前缀
         const uploadResult = await this.uploadFile(
           address.UploadURL,
           address.Token,
           file,
-          controller.signal,
+          this.abortController.signal,
           (loaded, total, percentComplete) => {
             onProgress && onProgress(loaded, total, percentComplete); // 进度回调
           }
@@ -142,11 +147,11 @@ class UploadLoader {
         retryCount,
         onProgress
       );
-      ///数据上报
-      this.report.creatReportData(uploadResults, "upload");
+
+      let result;
       // 处理上传结果
       if (uploadResult.code === 0) {
-        const result = await this.onCreateAsset(
+        result = await this.onCreateAsset(
           isTempUpload,
           file,
           areaId,
@@ -155,14 +160,16 @@ class UploadLoader {
           md5,
           uploadResult
         );
-        // 返回成功结果，保留 cId
-        return result;
       } else {
-        return {
-          code: StatusCodes.UPLOAD_FILE_ERROR, // 上传文件错误状态码
-          msg: "All upload addresses failed.", // 错误信息
+        result = {
+          code: -1, // 上传文件错误状态码
+          msg: uploadResult.msg ?? "Upload addresses failed.", // 错误信息
         };
       }
+      ///数据上报
+      this.report.creatReportData(uploadResults, "upload");
+      // 返回成功结果，保留 cId
+      return result;
     } catch (error) {
       return onHandleData({ code: StatusCodes.FAILURE, msg: error });
     }
@@ -175,14 +182,15 @@ class UploadLoader {
       if (index >= addresses.length) {
         return {
           code: StatusCodes.UPLOAD_FILE_ERROR,
-          msg: "All upload addresses failed.",
+          msg: "upload addresses failed.",
         };
       }
 
       for (let attempts = 0; attempts < retryCount; attempts++) {
         try {
           const uploadResult = await attemptUpload(addresses[index]); // 尝试上传
-          if (uploadResult.code === 0) return uploadResult; // 成功上传
+          log("uploadWithRetry", uploadResult)
+          if (uploadResult.code === 0 || uploadResult.code == -200) return uploadResult; // 成功上传/用户手动取消
         } catch (error) {
           // 等待后重试
           await new Promise((resolve) =>
@@ -269,8 +277,6 @@ class UploadLoader {
       });
     }
 
-    console.log(222, res2);
-
     // 处理返回结果
     if (res2.data.err && res2.data.err === 1017) {
       return onHandleData({
@@ -289,6 +295,14 @@ class UploadLoader {
         },
         msg: "Upload success",
       });
+    }
+  }
+
+  // 取消上传的方法
+  cancelUpload() {
+    if (this.abortController) {
+      this.abortController.abort(); // 触发取消
+      this.abortController = null; // 清空 controller
     }
   }
 }

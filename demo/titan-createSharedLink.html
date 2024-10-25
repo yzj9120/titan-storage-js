@@ -48,8 +48,8 @@
 							<li><strong>shortPass</strong>: <code>String</code> - The access password is not mandatory.
 								When it is not empty (a password consisting of 6 digits and letters), it needs to be
 								verified whether it is valid.</li>
-								
-								<li><strong>shortPass</strong>: <code>Number</code> - Does it support using days? Default is false. No, when false, expireAt supports timestamps, and when true, expireAt supports days.</li>
+							
+								<li><strong>hasDay</strong>: <code>Number</code> - Does it support using days? Default is false. No, when false, expireAt supports timestamps, and when true, expireAt supports days.</li>
 						</ul>
 
 						<h4>Returns</h4>
@@ -86,7 +86,8 @@
 				var res = await sdk.createSharedLink({
 					id: 256, // bafybeiamqu7byo4pqjpdri56km2vv63siifoao3nmm6kuwoof3galdunjy
 					// expireAt: 2,
-					// shortPass: 'secure123'
+					// shortPass: 'secure123'，
+					// hasDay: true,Does it support using days
 				});
 			});
 		</script>

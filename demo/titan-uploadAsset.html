@@ -33,19 +33,24 @@ async function uploadAsset() {
     const file = document.getElementById('fileInput').files[0];
     const assetData = {
         extraId: "",
-        areaId: ["SouthKorea", "Japan"],
+        areaId: [""],
         groupId: 0,
         assetType: 0
     };
-
-    const result = await uploadAsset(file, assetData, 
-        (loaded, total, percent) => console.log(`Upload progress: ${percent}%`) 
-    );
+    var res = await sdk.uploadAsset(files, assetData,
+			(loaded, total, percent) => {
+				console.log(`Progress: ${percent.toFixed(2)}% (${loaded}/${total})`);
+			},
+			null,
+			(cancelFn) => {
+				cancelUploadFn = cancelFn; 
+			}
+		);
 
     if (result.code === 0) {
-        console.log('File uploaded successfully:', result.data);
+        //successfully
     } else {
-        console.error('Error uploading file:', result.msg);
+       //error
     }
 }
 </code></pre>
@@ -61,15 +66,22 @@ async function uploadAsset() {
         assetType: 1
     };
 
-    const result = await uploadAsset(file, assetData, 
-        (loaded, total, percent) => console.log(`Upload progress: ${percent}%`), 
-        (status) => console.log(`Stream status: ${status}`)
-    );
-
+    var res = await sdk.uploadAsset(files, assetData,
+    		(loaded, total, percent) => {
+    			console.log(`Progress: ${percent.toFixed(2)}% (${loaded}/${total})`);
+    		},
+    		(status) => {
+    			console.log("WritableStream status:", status);
+    		},
+    		(cancelFn) => {
+    			cancelUploadFn = cancelFn; 
+    		}
+    	);
+    
     if (result.code === 0) {
-        console.log('File uploaded successfully:', result);
+        //successfully
     } else {
-        console.error('Error uploading file:', result);
+       //error
     }
 }
 </code></pre>
@@ -87,7 +99,10 @@ async function uploadAsset() {
 										the system will upload the file to specified regions. If empty, the system will
 										automatically distribute the file globally based on rules. The system calculates
 										the region based on the user's IP for downloading.</li>
-									<li><strong>groupId</strong>: <code>Number</code> - Node ID, Defaults to groupId=0, which refers to the root node. If you need to upload to other nodes, the ID must be obtained from the group, such as Group.ID. If groupId=-1, it indicates an external upload, where the maximum allowed file size is 100MB.</li>
+									<li><strong>groupId</strong>: <code>Number</code> - Node ID, Defaults to groupId=0,
+										which refers to the root node. If you need to upload to other nodes, the ID must
+										be obtained from the group, such as Group.ID. If groupId=-1, it indicates an
+										external upload, where the maximum allowed file size is 100MB.</li>
 									<li><strong>assetType</strong>: <code>Number</code> - File type, defaults to 0 for
 										files and 1 for folders.</li>
 
@@ -97,14 +112,23 @@ async function uploadAsset() {
 							</li>
 							<li><strong>onProgress</strong>: <code>Function</code> - A callback function to handle
 								upload progress. It receives the progress percentage as an argument.</li>
-							<li><strong>onStreamStatus</strong>: <code>Function</code> - A callback function to handle the stream status during the upload. It receives status updates as arguments. The possible status values include:
-							        <ul>
-							            <li><strong>writing</strong>: Indicates that the upload is currently in progress.</li>
-							            <li><strong>close</strong>: Indicates that the upload has been successfully completed and the stream has been closed.</li>
-							            <li><strong>abort</strong>: Indicates that the upload was aborted before completion, possibly due to an error or user intervention.</li>
-							        </ul>
-							    </li>
-						
+							<li><strong>onStreamStatus</strong>: <code>Function</code> - A callback function to handle
+								the stream status during the upload. It receives status updates as arguments. The
+								possible status values include:<strong>Note: There is no callback when uploading
+									files</strong>
+								<ul>
+									<li><strong>writing</strong>: Indicates that the upload is currently in progress.
+									</li>
+									<li><strong>close</strong>: Indicates that the upload has been successfully
+										completed and the stream has been closed.</li>
+									<li><strong>abort</strong>: Indicates that the upload was aborted before completion,
+										possibly due to an error or user intervention.</li>
+								</ul>
+
+							</li>
+							<li><strong>cancelFn</strong>: <code>Function</code> - Bind the cancellation event during
+								the upload process. If you need to cancel the upload, you need to bind your cancellation
+								event to this method.</li>
 						</ul>
 
 						<h4>Returns</h4>
@@ -135,6 +159,15 @@ async function uploadAsset() {
 
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
+
+
+				let cancelUploadFn = null;
+				document.getElementById("cancelButton").addEventListener("click", function() {
+					if (cancelUploadFn) {
+						cancelUploadFn(); // 调用取消上传的函数
+					}
+				});
+
 				const sdk = TitanStorage.getInstance();
 				const fileInput = document.getElementById('fileInput');
 				// 文件上传
@@ -149,10 +182,19 @@ async function uploadAsset() {
 							assetType: 0,
 							extraId: "52145655"
 						};
-						var res = await sdk.uploadAsset(file, assetData, (loaded, total, percent) =>
-							console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
+
+						const result = await sdk.uploadAsset(
+							file,
+							assetData,
+							(loaded, total, percent) => {
+								console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
+							},
+							null,
+							(cancelFn) => {
+								// 绑定取消函数
+								cancelUploadFn = cancelFn; 
+							}
 						);
-						console.log("result:", res);
 					} else {
 						console.error('No file selected');
 					}
@@ -176,14 +218,17 @@ async function uploadAsset() {
 							// Handle the stream status updates
 							switch (status) {
 								case 'writing':
-									
 									break;
 								case 'close':
 									break;
-								case 'abort':					
+								case 'abort':
 									break;
 								default:
 							}
+						},
+						(cancelFn) => {
+							// 绑定取消函数
+							cancelUploadFn = cancelFn; 
 						}
 					);
 					console.log("result:", res);

@@ -291,7 +291,8 @@ class CommService {
       retryCount: 3,
     },
     onProgress,
-    onStreamStatus
+    onStreamStatus,
+    onCancel // 添加一个参数来接收取消函数
   ) {
     const validationResult = Validator.validateUploadOptions(
       file,
@@ -304,6 +305,9 @@ class CommService {
     if (assetData.assetType === 0) {
       ///文件
       this.uploadLoader = new UploadLoader(this.httpService);
+      if (onCancel) {
+        onCancel(() => this.uploadLoader.cancelUpload()); // 在 cancelUpload 时调用
+      }
       return await this.uploadLoader.onFileUpload(
         file,
         assetData,
@@ -313,6 +317,10 @@ class CommService {
     } else if (assetData.assetType === 1) {
       //文件夹
       this.folderLoader = new FolderLoader(this.httpService);
+
+      if (onCancel) {
+        onCancel(() => this.folderLoader.cancelUpload()); // 在 cancelUpload 时调用
+      }
       return await this.folderLoader.handleFolderUpload(
         file,
         assetData,

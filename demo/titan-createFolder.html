@@ -74,16 +74,6 @@ if (result.code === 0) {
 			document.addEventListener('DOMContentLoaded', function() {
 
 			const sdk = TitanStorage.getInstance();
-				sdk.getAssetGroupList({
-					page: 1,
-					parent: 0,
-					pageSize: 10
-				}).then(data => {
-					console.log('Fetched asset groups:', data);
-				}).catch(error => {
-					console.error('Error fetching asset groups:', error);
-				});
-
 				sdk.createGroup({
 					name: 'New Folder',
 					parent: 0

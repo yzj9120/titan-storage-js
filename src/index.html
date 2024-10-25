@@ -124,6 +124,7 @@
 				</div>
 			</div>
 
+			<button type="button" id="cancelButton">Cancel Upload</button>
 
 		</div>
 	</div>
@@ -139,7 +140,7 @@
 		try {
 			// Initialize TitanSDK
 			TitanStorage.initialize({
-				token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjk4MjQ0NzEsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyOTczODA3MSwicm9sZSI6MH0.2_rJnGkp7amNZmMR3mP4ANQe70dM8dzA7myWPT442Vw",
+				token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjk4MjQ0NzEsImlkIjoidGl0YW4xamg0bnRmd3lsOXhxazllaGcycTdzNDR3OTlhZjkzOWpjZ3JkMmQiLCJvcmlnX2lhdCI6MTcyOTczODA3MSwicm9sZSI6MH0.2_rJnGkp7amNZmMR3mP4ANQe70dM8dzA7myWPT442Vw",
 				// token:"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjk3NTcwNjcsImlkIjoidGl0YW4xbGwzbHhrNGh2YW52a3V2a3lmMnk3bTJhcGE4ZnN6OHVmaDk5ODMiLCJvcmlnX2lhdCI6MTcyOTY3MDY2Nywicm9sZSI6MH0.quSF_0e2hpT_uDjIYPq4ZrO4EXMI0rm75AU7ct7ZYUc",
 				// token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3Mjk3NTg1ODEsImlkIjoidGl0YW4xM2N1djU1N3F6emZoajd2N2R2aGNqNGR0ZHV1MDN0bXlxY3Q2OWUiLCJvcmlnX2lhdCI6MTcyOTY3MjE4MSwicm9sZSI6MH0._zWeY2h2f45j5w_R-dbYAI0h-Exk8R-xWQSAZfJDt9E', // Replace with actual app key
 				debug: true,
@@ -332,9 +333,6 @@
 		});
 
 
-
-
-
 		document.getElementById('downloadAsset').addEventListener('click', async () => {
 			///下载 https://api-test1.container1.titannet.io/api/v1/storage/temp_file/share/bafkreianachejwgaf4fap7vnp3bsf62rnzkdnc3pgkwye7xwpxfuuavhbq
 			const options = {
@@ -359,7 +357,16 @@
 
 		});
 
+
+
 		// 文件上传
+		let cancelUploadFn = null;
+		document.getElementById("cancelButton").addEventListener("click", function () {
+			if (cancelUploadFn) {
+				// 调用取消上传的函数
+				cancelUploadFn(); 
+			}
+		});
 		document.getElementById('uploadFileButton').addEventListener('click', async () => {
 			const fileInput = document.getElementById('fileInput');
 			const file = fileInput.files[0];
@@ -367,10 +374,19 @@
 				const sdk = TitanStorage.getInstance();
 				// const assetData = { areaId: ["xx"], groupId: 0, assetType: 0, extraId: "52145655" };
 				const assetData = { groupId: 0, assetType: 0 };
-				var res = await sdk.uploadAsset(file, assetData, (loaded, total, percent) =>
-					console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
+				const result = await sdk.uploadAsset(
+					file,
+					assetData,
+					(loaded, total, percent) => {
+						console.log(`Progress for =${loaded}:${total}: ${percent.toFixed(2)}%`)
+					},
+					null,
+					(cancelFn) => {
+						// 绑定取消函数
+						cancelUploadFn = cancelFn; 
+					}
 				);
-				console.log("uploadAsset:", res);
+				console.log("uploadAsset:", result);
 			} else {
 				console.error('No file selected');
 			}
@@ -387,6 +403,9 @@
 				},
 				(status) => {
 					console.log("WritableStream status:", status);
+				},
+				(cancelFn) => {
+					cancelUploadFn = cancelFn; // 保存取消上传的函数
 				}
 			);
 			console.log("uploadAsset:", res);

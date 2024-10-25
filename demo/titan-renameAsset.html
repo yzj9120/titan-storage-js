@@ -4,12 +4,11 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<title>Titan Storage 1.0.0</title>
+		<title>Titan Storage SDK Documentation</title>
 		<meta name="description" content="Documentation for Titan Storage SDK">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="css/TitanStorage.css">
 		<script src="./js/umd/TitanStorage.js"></script>
-
 	</head>
 
 	<body>
@@ -17,121 +16,57 @@
 			<div class="row">
 				<div class="col-12 col-content">
 					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
-						<a name="renameAsset" class="tsd-anchor"></a>
+						<a name="renameGroup" class="tsd-anchor"></a>
 						<h3>renameAsset</h3>
-						<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
-							<li class="tsd-signature tsd-kind-icon">renameAsset(options = { assetId: -1, name: ''
-								})<span class="tsd-signature-symbol">:</span>
-								<span class="tsd-signature-type">Promise&lt;Object&gt;</span>
-							</li>
-						</ul>
-						<ul class="tsd-descriptions">
-							<li class="tsd-description">
-								<aside class="tsd-sources">
-								</aside>
-								<div class="tsd-comment tsd-typography">
-									<div class="lead">
-										<p>该函数用于重命名指定的文件。用户必须提供文件 CID 和新的名称。</p>
-									</div>
-									<dl class="tsd-comment-tags">
-										<dt>Example</dt>
-										<dd>
-											<pre><code>TitanStorage.renameAsset({
-  assetId: 12345,
-  name: 'Renamed Asset'
-}).then(data => {
-  console.log('Asset renamed successfully:', data);
-}).catch(error => {
-  console.error('Error renaming asset:', error);
-});</code></pre>
-										</dd>
-									</dl>
-								</div>
-								<h4 class="tsd-parameters-title">Parameters</h4>
-								<ul class="tsd-parameters">
-									<li>
-										<h5>assetId: <span class="tsd-signature-type">number</span></h5>
-										<p>文件的 CID。必须提供。</p>
-									</li>
-									<li>
-										<h5>name: <span class="tsd-signature-type">string</span></h5>
-										<p>新文件名称。必须提供，不能为空或仅由空白字符组成。</p>
-									</li>
-								</ul>
-								<h4 class="tsd-returns-title">Returns <span
-										class="tsd-signature-type">Promise&lt;Object&gt;</span></h4>
-								<p>返回一个 Promise 对象，解析为包含重命名操作结果的响应数据。</p>
-								<h4 class="tsd-returns-details-title">Success Response</h4>
-								<p>成功返回的数据结构如下：</p>
-								<pre><code>{
-    "code": 0,
-    "data": {
-        "msg": "success"
-    }
-}</code></pre>
-								<h4 class="tsd-returns-details-title">Success Response Fields</h4>
-								<ul>
-									<li>
-										<h5>code: <span class="tsd-signature-type">number</span></h5>
-										<p>状态码，<code>0</code> 表示成功。</p>
-									</li>
-									<li>
-										<h5>data: <span class="tsd-signature-type">Object</span></h5>
-										<p>返回数据的主体对象。</p>
-										<ul>
-											<li>
-												<h5>msg: <span class="tsd-signature-type">string</span></h5>
-												<p>成功信息。</p>
+						<p>This method allows you to rename a asset by specifying its Asset CID and the new name. It validates the provided inputs before sending the request to the server.</p>
 
-											</li>
-										</ul>
-									</li>
-								</ul>
-								<h4 class="tsd-returns-details-title">Failure Response</h4>
-								<p>失败返回的数据结构如下：</p>
-								<pre><code>{
-    "code": -1,
-    "err": 1004,
-    "msg": "Server Busy"
+						<h4>Function Signature</h4>
+						<pre><code>const result = await renameAsset({ assetId, name });</code></pre>
+
+						<p>This method sends a request to rename an existing group on the server.</p>
+
+						<h4>Example</h4>
+						<pre><code>const result = await renameAsset({ assetId: “bafybeih3c....”, name: 'Updated Asset' });
+if (result.code === 0) {
+    console.log(result); // Success
+} else {
+    console.error(result); // Failure
 }</code></pre>
-								<h4 class="tsd-returns-details-title">Failure Response Fields</h4>
-								<ul>
-									<li>
-										<h5>code: <span class="tsd-signature-type">number</span></h5>
-										<p>状态码，<code>-1</code> 表示失败。</p>
-									</li>
-									<li>
-										<h5>err: <span class="tsd-signature-type">number</span></h5>
-										<p>错误码，具体的错误类型。</p>
-									</li>
-									<li>
-										<h5>msg: <span class="tsd-signature-type">string</span></h5>
-										<p>错误消息，描述错误的具体原因。</p>
-									</li>
-								</ul>
-								<h4 class="tsd-throws-title">Throws</h4>
-								<p>如果名称为空或仅包含空白字符，或在重命名文件过程中发生错误，将抛出一个错误。</p>
-							</li>
+
+						<h4>Parameters</h4>
+						<ul>
+							<li><strong>assetId</strong>: <code>Number</code> - The ID of the Asset to CID. This is a required parameter and must be a valid group ID.</li>
+							<li><strong>name</strong>: <code>String</code> - The new name for the Asset. This is a required parameter and must be a valid string.</li>
 						</ul>
+
+						<h4>Returns</h4>
+						<p>This function returns a Promise which resolves to an object containing:</p>
+						<ul>
+							<li><strong>code</strong>: A number representing the result of the operation (0 for success, other values indicate failure).</li>
+							<li><strong>data</strong>: The updated Asset object if the operation is successful.</li>
+							<li><strong>msg</strong>: A string describing the outcome of the operation, especially in case of errors.</li>
+						</ul>
+
+						<h4>Error Handling</h4>
+						<p>If the rename operation fails, the <code>code</code> will be non-200, and the <code>message</code> will provide details about the error, such as an invalid group name, invalid group ID, or server-related issues.</p>
+
+						<h4>Important Note</h4>
+						<p>Ensure that both <code>Asset CID </code> and <code>name</code> parameters are valid before calling the method to avoid unnecessary errors. The method uses validators to check the input values, and it will return any validation errors if the inputs are invalid.</p>
 					</section>
 				</div>
 			</div>
 		</div>
+
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
 				const sdk = TitanStorage.getInstance();
-
-				TitanStorage.getInstance().renameAsset({
-					name: "修改名称",
-					assetId: "bafybeiakfko6hakzdqaz5k3eylo6rbw64l7cunjptwa6hwzvkh5rmanwpm"
-				}).then(res => {
-					console.log('createFolder:', res);
-
-				}).catch(error => {
-					console.error('Error creating folder:', error);
-				});;
-
-
+				sdk.renameAsset({ assetId: "", name: 'Updated Group' })
+					.then(data => {
+						console.log('renameAsset successfully:', data);
+					})
+					.catch(error => {
+						console.error('Error renameAsset :', error);
+					});
 			});
 		</script>
 
