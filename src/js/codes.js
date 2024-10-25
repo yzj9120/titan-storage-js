@@ -42,6 +42,7 @@ const StatusCodes = {
   ASSET_OBJ_ERROR: 10025,
   REQUEST_ERROR: 10026,
   File_Size_ERROR: 10027,
+  File_REQUEST_ABOR: 10028,
 
 
 

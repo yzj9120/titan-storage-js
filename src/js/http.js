@@ -222,7 +222,7 @@ export class Http {
       // Handle request abortion
       signal.addEventListener("abort", () => {
         xhr.abort();
-        reject(onHandleData({ code: -200, msg: "Handle request abortion" }));
+        reject(onHandleData({ code: -200, msg: "Handle request abortion", data: { abort: true } }));
       });
 
       const formData = new FormData();

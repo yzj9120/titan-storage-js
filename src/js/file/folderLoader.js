@@ -27,6 +27,7 @@ class FolderLoader {
         return onHandleData({
           code: response.code,
           msg: "Failed to upload file: " + response.msg,
+          data: response.data ?? {},
         });
       }
       return response; // 返回上传成功的结果
@@ -34,6 +35,7 @@ class FolderLoader {
       return onHandleData({
         code: error.code,
         msg: "Failed to upload file: " + error.msg ?? "",
+        data: error.data ?? {},
       });
     }
   }
@@ -158,7 +160,8 @@ class FolderLoader {
       } else {
         return {
           code: -1, // 上传文件错误状态码
-          msg: "Upload addresses failed.", // 错误信息
+          msg: uploadResult.msg ?? "Upload addresses failed.", // 错误信息
+          data: uploadResult.data ?? {},
         };
       }
     } catch (error) {
